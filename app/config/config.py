@@ -27,12 +27,6 @@ class Settings(BaseSettings):
     REDIS_URL: Optional[str] = None
     RABBITMQ_DEFAULT_QUEUE_NAME: Optional[str] = None
 
-    AWS_ACCESS_KEY_ID: Optional[str] = None
-    AWS_SECRET_ACCESS_KEY: Optional[str] = None
-    AWS_BUCKET_NAME: Optional[str] = None
-    AWS_REGION_NAME: Optional[str] = None
-
-    CHROME_DRIVER_PATH: Optional[str] = None
     INSTA_USERNAME: Optional[str] = None
     INSTA_PASSWORD: Optional[str] = None
 

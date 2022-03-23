@@ -33,9 +33,8 @@ async def async_post_instagram(self, payload):
 
         twitch_model.post_status = PostStatus.POSTING.value
         await self.twitch_repository.insert_or_update(twitch_model)
-        time.sleep(10)
-        # instagram_services = InstagramServices()
-        # instagram_services.post_clip(payload.caption, clip_path)
+        instagram_services = InstagramServices()
+        instagram_services.post_clip(payload.caption, clip_path)
 
         os.remove(clip_path)
 
