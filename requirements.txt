@@ -6,4 +6,6 @@ redis==4.1.4
 uvicorn==0.17.6
 pydantic==1.9.0
 SQLAlchemy==1.4.32
+fastapi==0.75.0
+
 
