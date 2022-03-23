@@ -1,0 +1,5 @@
+twitchAPI==2.5.3
+python-dotenv==0.19.2
+asyncpg==0.25.0
+celery==5.2.3
+redis==4.1.4

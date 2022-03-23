@@ -1,0 +1,1 @@
+from .tasks import post_instagram

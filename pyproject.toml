@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "kraken"
+version = "0.1.0"
+description = ""
+authors = ["Davi Souza <davi.souza@upperds.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+celery = "^5.2.3"
+twitchAPI = "^2.5.3"
+python-dotenv = "^0.19.2"
+asyncpg = "^0.25.0"
+redis = "^4.1.4"
+SQLAlchemy = "^1.4.32"
+alembic = "^1.7.7"
+pydantic = "^1.9.0"
+fastapi = "^0.75.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
