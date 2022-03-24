@@ -17,6 +17,40 @@ class InstagramIntegration:
 
         self.driver = webdriver.Chrome(executable_path=PATH)
 
+    @staticmethod
+    def drag_and_drop_file(drop_target, path):
+        JS_DROP_FILE = """
+                var target = arguments[0],
+                    offsetX = arguments[1],
+                    offsetY = arguments[2],
+                    document = target.ownerDocument || document,
+                    window = document.defaultView || window;
+
+                var input = document.createElement('INPUT');
+                input.type = 'file';
+                input.onchange = function () {
+                  var rect = target.getBoundingClientRect(),
+                      x = rect.left + (offsetX || (rect.width >> 1)),
+                      y = rect.top + (offsetY || (rect.height >> 1)),
+                      dataTransfer = { files: this.files };
+
+                  ['dragenter', 'dragover', 'drop'].forEach(function (name) {
+                    var evt = document.createEvent('MouseEvent');
+                    evt.initMouseEvent(name, !0, !0, window, 0, 0, 0, x, y, !1, !1, !1, !1, 0, null);
+                    evt.dataTransfer = dataTransfer;
+                    target.dispatchEvent(evt);
+                  });
+
+                  setTimeout(function () { document.body.removeChild(input); }, 25);
+                };
+                document.body.appendChild(input);
+                return input;
+            """
+
+        driver = drop_target.parent
+        file_input = driver.execute_script(JS_DROP_FILE, drop_target, 0, 0)
+        file_input.send_keys(path)
+
     def post_video(self) -> bool:
         try:
             main_url = "https://www.instagram.com"
@@ -33,14 +67,12 @@ class InstagramIntegration:
             self.driver.find_element(By.XPATH,
                                 '//*[@id="react-root"]/section/nav/div[2]/div/div/div[3]/div/div[3]/div/button').click()
             sleep(2)
-            self.driver.find_element(By.XPATH,
-                                '/html/body/div[8]/div[2]/div/div/div/div[2]/div[1]/div/div/div[2]/div/button').click()
+
+            drop_target = self.driver.find_element(By.XPATH, "/html/body/div[8]/div[2]/div/div/div/div[2]/div[1]/div/div")
             sleep(2)
-            autoit.win_active("Abrir")
-            sleep(2)
-            autoit.control_send("Abrir", "Edit1", self.video_path)
-            sleep(2)
-            autoit.control_send("Abrir", "Edit1", "{ENTER}")
+
+            self.drag_and_drop_file(drop_target, self.video_path)
+
             sleep(2)
             self.driver.find_element(By.XPATH,
                                 '/html/body/div[6]/div[2]/div/div/div/div[2]/div[1]/div/div/div/div[1]/div/div[2]/div/button').click()

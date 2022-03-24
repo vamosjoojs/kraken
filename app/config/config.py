@@ -33,6 +33,8 @@ class Settings(BaseSettings):
     TWITCH_APP_ID: Optional[str] = None
     TWITCH_APP_SECRET: Optional[str] = None
 
+    CHROME_DRIVER_PATH: Optional[str] = None
+
     @classmethod
     def db_fields(cls):
         user = os.getenv("POSTGRES_USER")
