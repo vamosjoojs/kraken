@@ -1,9 +1,9 @@
 import asyncio
 import os
-import time
 
 from app.models.entities import Twitch
 from app.models.schemas.kraken import PostStatus, KrakenHand
+from app.services.instagram_service import InstagramServices
 from app.services.twitch_service import TwitchIntegration
 from app.tasks.base import DatabaseTask
 
@@ -23,7 +23,7 @@ async def async_post_instagram(self, payload):
                           post_status=PostStatus.INITIATED.value,
                           kraken_hand=KrakenHand.INSTAGRAM.value,
                           clip_url=payload['thumbnail'])
-    print(self)
+
     await self.twitch_repository.insert_or_update(twitch_model)
     try:
         twitch_integration = TwitchIntegration()
