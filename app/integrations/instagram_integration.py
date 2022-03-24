@@ -13,10 +13,8 @@ class InstagramIntegration:
         self.password = config.INSTA_PASSWORD
         self.video_path = video_path
         self.caption = caption
-        options = webdriver.ChromeOptions()
-        options.add_experimental_option('prefs', {'intl.accept_languages': 'pt,pt_BR'})
 
-        self.driver = webdriver.Chrome(executable_path=PATH, chrome_options=options)
+        self.driver = webdriver.Chrome(executable_path=PATH)
 
     @staticmethod
     def drag_and_drop_file(drop_target, path):
@@ -85,10 +83,10 @@ class InstagramIntegration:
             sleep(2)
             self.driver.find_element(By.XPATH,'/html/body/div[6]/div[2]/div/div/div/div[1]/div/div/div[3]/div/button').click()
             sleep(2)
-            caption_field = self.driver.find_element(By.XPATH,"//textarea[@aria-label='Escreva uma legenda...']")
+            caption_field = self.driver.find_element(By.XPATH,"//textarea[@aria-label='Write a caption…']")
             sleep(1.5)
             caption_field.send_keys(self.caption)
-            self.driver.find_element(By.XPATH,"//button[contains(text(),'Compartilhar')]").click()
+            self.driver.find_element(By.XPATH,"//button[contains(text(),'Share')]").click()
             sleep(30)
             self.driver.close()
             return True
@@ -106,7 +104,7 @@ class InstagramIntegration:
     def close_reactivated(self):
         try:
             sleep(2)
-            not_now_btn = self.driver.find_element(By.XPATH,"//a[contains(text(),'Agora não')]")
+            not_now_btn = self.driver.find_element(By.XPATH,"//a[contains(text(),'Not Now')]")
             not_now_btn.click()
         except:
             pass
@@ -114,7 +112,7 @@ class InstagramIntegration:
     def close_notification(self):
         try:
             sleep(2)
-            close_noti_btn = self.driver.find_element(By.XPATH,"//button[contains(text(),'Agora não')]")
+            close_noti_btn = self.driver.find_element(By.XPATH,"//button[contains(text(),'Not Now')]")
             close_noti_btn.click()
             sleep(2)
         except:
@@ -122,6 +120,6 @@ class InstagramIntegration:
 
     def close_add_to_home(self):
         sleep(3)
-        close_addHome_btn = self.driver.find_element(By.XPATH,"//button[contains(text(),'Agora não')]")
+        close_addHome_btn = self.driver.find_element(By.XPATH,"//button[contains(text(),'Not Now')]")
         close_addHome_btn.click()
         sleep(1)
