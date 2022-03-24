@@ -13,8 +13,10 @@ class InstagramIntegration:
         self.password = config.INSTA_PASSWORD
         self.video_path = video_path
         self.caption = caption
+        options = webdriver.ChromeOptions()
+        options.add_experimental_option('prefs', {'intl.accept_languages': 'pt,pt_BR'})
 
-        self.driver = webdriver.Chrome(executable_path=PATH)
+        self.driver = webdriver.Chrome(executable_path=PATH, chrome_options=options)
 
     @staticmethod
     def drag_and_drop_file(drop_target, path):
