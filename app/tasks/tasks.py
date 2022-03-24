@@ -25,22 +25,22 @@ async def async_post_instagram(self, payload):
                           clip_url=payload['thumbnail'])
 
     await self.twitch_repository.insert_or_update(twitch_model)
-    # try:
-    twitch_integration = TwitchIntegration()
-    twitch_model.post_status = PostStatus.DOWNLOADING_CLIP.value
-    await self.twitch_repository.insert_or_update(twitch_model)
-    clip_path = twitch_integration.download_clip(payload["thumbnail"])
+    try:
+        twitch_integration = TwitchIntegration()
+        twitch_model.post_status = PostStatus.DOWNLOADING_CLIP.value
+        await self.twitch_repository.insert_or_update(twitch_model)
+        clip_path = twitch_integration.download_clip(payload["thumbnail"])
 
-    twitch_model.post_status = PostStatus.POSTING.value
-    await self.twitch_repository.insert_or_update(twitch_model)
-    instagram_services = InstagramServices()
-    instagram_services.post_clip(payload.caption, clip_path)
+        twitch_model.post_status = PostStatus.POSTING.value
+        await self.twitch_repository.insert_or_update(twitch_model)
+        instagram_services = InstagramServices()
+        instagram_services.post_clip(payload["caption"], clip_path)
 
-    os.remove(clip_path)
+        os.remove(clip_path)
 
-    twitch_model.post_status = PostStatus.COMPLETED.value
-    await self.twitch_repository.insert_or_update(twitch_model)
-    # except Exception as ex:
-    #     print(ex)
-    #     twitch_model.post_status = PostStatus.ERROR.value
-    #     await self.twitch_repository.insert_or_update(twitch_model)
+        twitch_model.post_status = PostStatus.COMPLETED.value
+        await self.twitch_repository.insert_or_update(twitch_model)
+    except Exception as ex:
+        twitch_model.post_status = PostStatus.ERROR.value
+        await self.twitch_repository.insert_or_update(twitch_model)
+        raise Exception(f"{ex}")
