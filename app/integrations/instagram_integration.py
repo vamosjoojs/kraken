@@ -65,26 +65,26 @@ class InstagramIntegration:
             sleep(4)
             self.driver.find_element(By.XPATH,
                                 '//*[@id="react-root"]/section/nav/div[2]/div/div/div[3]/div/div[3]/div/button').click()
-            sleep(2)
+            sleep(4)
 
             drop_target = self.driver.find_element(By.XPATH, "/html/body/div[8]/div[2]/div/div/div/div[2]/div[1]/div/div")
-            sleep(2)
+            sleep(4)
 
             self.drag_and_drop_file(drop_target, self.video_path)
 
-            sleep(2)
+            sleep(4)
             self.driver.find_element(By.XPATH,
                                 '/html/body/div[6]/div[2]/div/div/div/div[2]/div[1]/div/div/div/div[1]/div/div[2]/div/button').click()
-            sleep(2)
+            sleep(4)
             self.driver.find_element(By.XPATH,
                                 '/html/body/div[6]/div[2]/div/div/div/div[2]/div[1]/div/div/div/div[1]/div/div[1]/div/button[1]').click()
-            sleep(2)
+            sleep(4)
             self.driver.find_element(By.XPATH,'/html/body/div[6]/div[2]/div/div/div/div[1]/div/div/div[3]/div/button').click()
-            sleep(2)
+            sleep(4)
             self.driver.find_element(By.XPATH,'/html/body/div[6]/div[2]/div/div/div/div[1]/div/div/div[3]/div/button').click()
-            sleep(2)
+            sleep(4)
             caption_field = self.driver.find_element(By.XPATH,"//textarea[@aria-label='Write a caption…']")
-            sleep(1.5)
+            sleep(4)
             caption_field.send_keys(self.caption)
             self.driver.find_element(By.XPATH,"//button[contains(text(),'Share')]").click()
             sleep(30)
