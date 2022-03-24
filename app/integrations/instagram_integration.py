@@ -2,6 +2,7 @@ from time import sleep
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from app.config.config import config
+from selenium.webdriver.chrome.options import Options
 
 
 class InstagramIntegration:
@@ -13,8 +14,11 @@ class InstagramIntegration:
         self.password = config.INSTA_PASSWORD
         self.video_path = video_path
         self.caption = caption
+        chrome_options = Options()
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
 
-        self.driver = webdriver.Chrome(executable_path=PATH)
+        self.driver = webdriver.Chrome(executable_path=PATH, options=chrome_options)
 
     @staticmethod
     def drag_and_drop_file(drop_target, path):
