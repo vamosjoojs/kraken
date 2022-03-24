@@ -1,4 +1,4 @@
-import autoit
+import ait as autoit
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.common.by import By
