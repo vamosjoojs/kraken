@@ -40,6 +40,7 @@ async def async_post_instagram(self, payload):
 
         twitch_model.post_status = PostStatus.COMPLETED.value
         await self.twitch_repository.insert_or_update(twitch_model)
-    except Exception:
+    except Exception as ex:
+        print(ex)
         twitch_model.post_status = PostStatus.ERROR.value
         await self.twitch_repository.insert_or_update(twitch_model)
