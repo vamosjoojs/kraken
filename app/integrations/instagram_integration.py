@@ -107,7 +107,7 @@ class InstagramIntegration:
 
     def close_reactivated(self):
         try:
-            sleep(2)
+            sleep(4)
             not_now_btn = self.driver.find_element(By.XPATH,"//a[contains(text(),'Not Now')]")
             not_now_btn.click()
         except:
@@ -115,15 +115,15 @@ class InstagramIntegration:
 
     def close_notification(self):
         try:
-            sleep(2)
+            sleep(4)
             close_noti_btn = self.driver.find_element(By.XPATH,"//button[contains(text(),'Not Now')]")
             close_noti_btn.click()
-            sleep(2)
+            sleep(4)
         except:
             pass
 
     def close_add_to_home(self):
-        sleep(3)
+        sleep(4)
         close_addHome_btn = self.driver.find_element(By.XPATH,"//button[contains(text(),'Not Now')]")
         close_addHome_btn.click()
-        sleep(1)
+        sleep(4)
