@@ -12,7 +12,7 @@ class DatabaseTask(Task):
     _session = None
     _engine = engine
 
-    def after_return(self, *args, **kwargs):
+    async def after_return(self, *args, **kwargs):
         if self._session is not None:
             await self._session.close()
             await self._engine.dispose()
