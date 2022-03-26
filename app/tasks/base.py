@@ -12,10 +12,10 @@ class DatabaseTask(Task):
     _session = None
     _engine = engine
 
-    async def after_return(self, *args, **kwargs):
+    def after_return(self, *args, **kwargs):
         if self._session is not None:
-            await self._session.close()
-            await self._engine.dispose()
+            self._session.close()
+            self._engine.dispose()
 
     @property
     def kraken_repository(self):
