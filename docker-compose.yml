@@ -17,6 +17,17 @@ services:
         command: redis-server
         ports:
             - "6379:6379"
+            
+    worker:
+        build:
+            context: .
+            dockerfile: ./docker/dockerfile.celery
+        env_file:
+            - .env
+        depends_on:
+            - db
+        extra_hosts:
+            host.docker.internal: host-gateway
 
 volumes:
     db-data:

@@ -1,23 +1,30 @@
+from datetime import datetime, timedelta
+
+from app.db.repositories.auto_tasks_repository import AutoTasksRepository
+from app.db.repositories.kraken_repository import KrakenRepository
 from app.db.repositories.twitch_repository import TwitchRepository
-from app.models.entities import Twitch
+from app.models.entities import Kraken, TwitchClips, AutoTasks
 from app.models.schemas.kraken import (
     TwitchClipsResponse, PostInstagramClip, PostStatus, KrakenHand, TwitchClipsResponsePagination,
+    AutomaticPostInstagramClip,
 )
-from typing import List
 from app.integrations.twitch_integration import TwitchIntegration
 from app import tasks
 
 
 class TwitchServices:
-    def __init__(self, repo: TwitchRepository):
+    def __init__(self, twitch_repo: TwitchRepository, kraken_repo: KrakenRepository, auto_tasks_repo: AutoTasksRepository):
         self.twitch_integration = TwitchIntegration()
-        self.repo = repo
+        self.twitch_repo = twitch_repo
+        self.kraken_repo = kraken_repo
+        self.auto_tasks_repo = auto_tasks_repo
 
     def get_clips(self, next_cursor: str = None, back_cursor: str = None) -> TwitchClipsResponsePagination:
         clips = self.twitch_integration.get_all_clips(after_cursor=next_cursor, back_cursor=back_cursor)
         list_twitch_clip_response = []
         for clip in clips['data']:
             response_model = TwitchClipsResponse(**clip)
+            response_model.clip_id = clip['id']
             list_twitch_clip_response.append(response_model)
 
         response = TwitchClipsResponsePagination(twitch_response=list_twitch_clip_response, cursor=clips['pagination']['cursor'])
@@ -28,20 +35,48 @@ class TwitchServices:
         return clip_path
 
     async def post_clip_instagram(self, payload: PostInstagramClip):
-        clip = await self.repo.get_twitch_clips_by_clip_url(payload.thumbnail)
-        if clip and clip.kraken_hand == KrakenHand.INSTAGRAM.value and clip.clip_url == payload.thumbnail:
+        clip = await self.twitch_repo.get_twitch_clips_by_clip_id(payload.clip_id)
+        if clip and KrakenHand.INSTAGRAM.value in [x.kraken_hand for x in clip.kraken]:
             raise "Video já postado no Instagram."
 
-        twitch_model = Twitch(post_status=PostStatus.CREATED.value,
-                              kraken_hand=KrakenHand.INSTAGRAM.value,
-                              clip_url=payload.thumbnail)
+        twitch_model = TwitchClips(
+            clip_name=payload.clip_name,
+            clip_id=payload.clip_id,
+            clip_url=payload.thumbnail
+        )
 
-        id = await self.repo.insert_or_update(twitch_model)
+        twitch = await self.twitch_repo.add(twitch_model)
+
+        kraken_model = Kraken(
+            post_status=PostStatus.CREATED.value,
+            kraken_hand=KrakenHand.INSTAGRAM.value,
+            twitch_clips_id=twitch.id,
+            caption=payload.caption
+        )
+
+        kraken = await self.kraken_repo.add(kraken_model)
 
         payload = dict(payload)
-        payload['id'] = id
+        payload['kraken_id'] = kraken.id
 
         tasks.post_instagram.apply_async(
             args=[dict(payload)], connect_timeout=10
         )
 
+    async def automatic_post_clip_instagram(self, payload: AutomaticPostInstagramClip):
+        switch_instagram = AutoTasks(
+            post_type="INSTAGRAM",
+            twitch_creator_name=payload.creator_name,
+            activated_at=datetime.utcnow(),
+            deactivated_at=datetime.utcnow() + timedelta(hours=payload.hours)
+        )
+        await self.auto_tasks_repo.add(switch_instagram)
+
+        payload = dict(payload)
+        payload['auto_task_id'] = switch_instagram.id
+
+        print(payload)
+
+        tasks.automatic_post_instagram.apply_async(
+            args=[payload], connect_timeout=10
+        )

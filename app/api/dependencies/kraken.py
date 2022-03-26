@@ -1,4 +1,7 @@
 from fastapi.param_functions import Depends
+
+from app.db.repositories.auto_tasks_repository import AutoTasksRepository
+from app.db.repositories.kraken_repository import KrakenRepository
 from app.db.uow import UnitOfWork
 from app.api.dependencies.get_db import get_uow
 from app.db.repositories.twitch_repository import TwitchRepository
@@ -11,7 +14,10 @@ async def get_twitch_service(
     uow: UnitOfWork = Depends(get_uow)
 ) -> TwitchServices:
     repository = TwitchRepository(uow)
-    return TwitchServices(repository)
+    kraken_repository = KrakenRepository(uow)
+    auto_tasks_repository = AutoTasksRepository(uow)
+
+    return TwitchServices(repository, kraken_repository, auto_tasks_repository)
 
 
 async def get_instagram_service(
@@ -22,6 +28,6 @@ async def get_instagram_service(
 async def get_kraken_service(
     uow: UnitOfWork = Depends(get_uow)
 ) -> KrakenServices:
-    repository = TwitchRepository(uow)
+    repository = KrakenRepository(uow)
     return KrakenServices(repository)
 

@@ -10,6 +10,7 @@ class TwitchClipsResponse(Base):
     thumbnail_url: Optional[str]
     creator_name: Optional[str]
     title: Optional[str]
+    clip_id: Optional[str]
 
 
 class TwitchClipsResponsePagination(Base):
@@ -33,9 +34,18 @@ class KrakenHand(Enum):
 class PostInstagramClip(Base):
     thumbnail: str
     caption: str
+    clip_id: str
+    clip_name: str
+
+
+class AutomaticPostInstagramClip(Base):
+    caption: Optional[str]
+    creator_name: Optional[str]
+    hours: int
 
 
 class PostQueue(Base):
     created_at: datetime.datetime
     post_status: PostStatus
     kraken_hand: KrakenHand
+    name: Optional[str]

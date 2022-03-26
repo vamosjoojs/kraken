@@ -1,1 +1,1 @@
-from .tasks import post_instagram
+from .tasks import post_instagram, automatic_post_instagram
