@@ -35,9 +35,9 @@ class TwitchServices:
         return clip_path
 
     async def post_clip_instagram(self, payload: PostInstagramClip):
-        clip = await self.twitch_repo.get_twitch_clips_by_clip_id(payload.clip_id)
-        if clip and KrakenHand.INSTAGRAM.value in [x.kraken_hand for x in clip.kraken]:
-            raise "Video já postado no Instagram."
+        # clip = await self.twitch_repo.get_twitch_clips_by_clip_id(payload.clip_id)
+        # if clip and KrakenHand.INSTAGRAM.value in [x.kraken_hand for x in clip.kraken]:
+        #     raise "Video já postado no Instagram."
 
         twitch_model = TwitchClips(
             clip_name=payload.clip_name,
