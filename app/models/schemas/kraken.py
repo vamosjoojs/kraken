@@ -11,6 +11,8 @@ class TwitchClipsResponse(Base):
     creator_name: Optional[str]
     title: Optional[str]
     clip_id: Optional[str]
+    is_posted: Optional[bool]
+    kraken_hand: Optional[str]
 
 
 class TwitchClipsResponsePagination(Base):

@@ -12,8 +12,8 @@ router = APIRouter()
     status_code=200,
     response_model=TwitchClipsResponsePagination
 )
-def get_twitch_clips(next_cursor: str = None, back_cursor: str = None, twitch_service: TwitchServices = Depends(get_twitch_service)):
-    clips = twitch_service.get_clips(next_cursor=next_cursor, back_cursor=back_cursor)
+async def get_twitch_clips(next_cursor: str = None, back_cursor: str = None, twitch_service: TwitchServices = Depends(get_twitch_service)):
+    clips = await twitch_service.get_clips(next_cursor=next_cursor, back_cursor=back_cursor)
     return clips
 
 
@@ -32,5 +32,14 @@ async def post_clip_instagram(payload: PostInstagramClip, twitch_service: Twitch
     status_code=201
 )
 async def automatic_post_clip_instagram(payload: AutomaticPostInstagramClip, twitch_service: TwitchServices = Depends(get_twitch_service)):
+    await twitch_service.automatic_post_clip_instagram(payload)
+
+
+@router.put(
+    "/change_post_status",
+    name="Kraken: Post status",
+    status_code=200
+)
+async def change_post_status(payload: AutomaticPostInstagramClip, twitch_service: TwitchServices = Depends(get_twitch_service)):
     await twitch_service.automatic_post_clip_instagram(payload)
 

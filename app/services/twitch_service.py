@@ -19,12 +19,17 @@ class TwitchServices:
         self.kraken_repo = kraken_repo
         self.auto_tasks_repo = auto_tasks_repo
 
-    def get_clips(self, next_cursor: str = None, back_cursor: str = None) -> TwitchClipsResponsePagination:
+    async def get_clips(self, next_cursor: str = None, back_cursor: str = None) -> TwitchClipsResponsePagination:
         clips = self.twitch_integration.get_all_clips(after_cursor=next_cursor, back_cursor=back_cursor)
         list_twitch_clip_response = []
         for clip in clips['data']:
             response_model = TwitchClipsResponse(**clip)
             response_model.clip_id = clip['id']
+            clip_stored = await self.twitch_repo.get_twitch_clips_by_clip_id(clip['id'])
+            response_model.is_posted = False
+            if clip_stored:
+                response_model.is_posted = True
+                response_model.kraken_hand = clip_stored.kraken[0].kraken_hand
             list_twitch_clip_response.append(response_model)
 
         response = TwitchClipsResponsePagination(twitch_response=list_twitch_clip_response, cursor=clips['pagination']['cursor'])
