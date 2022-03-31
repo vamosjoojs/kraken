@@ -32,7 +32,16 @@ async def post_clip_instagram(payload: PostInstagramClip, twitch_service: Twitch
     status_code=201
 )
 async def automatic_post_clip_instagram(payload: AutomaticPostInstagramClip, twitch_service: TwitchServices = Depends(get_twitch_service)):
-    await twitch_service.automatic_post_clip_instagram(payload)
+    return await twitch_service.automatic_post_clip_instagram(payload)
+
+
+@router.put(
+    "/disable_automatic_post_instagram_clip/{id}",
+    name="Kraken: Disable automatic queue instagram twitch clip",
+    status_code=200
+)
+async def disable_automatic_post_clip_instagram(id: int, twitch_service: TwitchServices = Depends(get_twitch_service)):
+    await twitch_service.disable_automatic_post_clip_instagram(id)
 
 
 @router.put(

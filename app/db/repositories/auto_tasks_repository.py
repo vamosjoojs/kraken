@@ -12,7 +12,7 @@ class AutoTasksRepository(BaseRepository[AutoTasks]):
     def __init__(self, uow: UnitOfWork) -> None:
         super().__init__(uow, AutoTasks)
 
-    async def get_instagram_state_switch(self, id):
+    async def get_instagram_state_switch(self, id) -> AutoTasks:
         qb = sa.select(AutoTasks).where(AutoTasks.id == id)
 
         qb = qb.where(and_(
@@ -21,3 +21,14 @@ class AutoTasksRepository(BaseRepository[AutoTasks]):
 
         result = await self.uow.session.execute(qb)
         return result.scalars().first()
+
+    async def disable_task(self, id: int) -> int:
+        qb = sa.select(AutoTasks).where(AutoTasks.id == id)
+        result = await self.uow.session.execute(qb)
+        data = result.scalars().first()
+
+        async with self.uow as uow:
+            data.deactivated_at = datetime.datetime.utcnow()
+            await uow.session.commit()
+
+        return id

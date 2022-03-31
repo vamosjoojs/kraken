@@ -79,9 +79,13 @@ class TwitchServices:
 
         payload = dict(payload)
         payload['auto_task_id'] = switch_instagram.id
-
-        print(payload)
+        payload['initial_date'] = datetime.now()
 
         tasks.automatic_post_instagram.apply_async(
             args=[payload], connect_timeout=10
         )
+        return switch_instagram.id
+
+    async def disable_automatic_post_clip_instagram(self, id: int):
+        await self.auto_tasks_repo.disable_task(id)
+
