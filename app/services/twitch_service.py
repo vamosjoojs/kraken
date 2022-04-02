@@ -27,7 +27,7 @@ class TwitchServices:
             response_model.clip_id = clip['id']
             clip_stored = await self.twitch_repo.get_twitch_clips_by_clip_id(clip['id'])
             response_model.is_posted = False
-            if clip_stored:
+            if clip_stored.kraken.post_status != 'ERROR':
                 response_model.is_posted = True
                 response_model.kraken_hand = clip_stored.kraken[0].kraken_hand
             list_twitch_clip_response.append(response_model)
