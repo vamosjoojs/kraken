@@ -11,9 +11,8 @@ class TwitterIntegration:
             )
         self.twitter = tweepy.API(auth)
 
-    def search_tweets(self, q, count=100, result_type="mixed"):
-        place_id = '1b107df3ccc0aaa1'
-        result = self.twitter.search_tweets(q=f"{q} AND place:{place_id}", count=count, result_type=result_type)
+    def search_tweets(self, q, page=1):
+        result = self.twitter.search_users(q=f"{q}", page=page)
         return result
 
     def send_message(self, message: str, user_id: str) -> bool:

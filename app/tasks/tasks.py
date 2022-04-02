@@ -87,6 +87,7 @@ async def automatic_twitter_send_message(self, payload):
     # busca por parametros os dados de envio
     messages_per_hour = 25
     sleep_per_send = 100
+    users_per_round = 50
     # busca por parametros os dados de envio
 
     twitter_integration = TwitterIntegration(
@@ -102,22 +103,17 @@ async def automatic_twitter_send_message(self, payload):
     users_to_send = []
 
     logging.info(f"Usuários já enviados: {len(stored_users_ids)}")
-
+    page = 1
     logging.info("Começando processo de buscar os usuários")
-    max_requests = 50
-    count = 0
-    while len(users_to_send) <= 50:
-        logging.info(f"Usuários localizados: {len(users_to_send)}")
+    while len(users_to_send) <= users_per_round:
         try:
-            users_by_tag = twitter_integration.search_tweets(payload['tag'])
+            users_by_tag = twitter_integration.search_tweets(payload['tag'], page)
             logging.info(f"Usuários buscados na request: {len(users_by_tag)}")
             for user in users_by_tag:
-                if int(user.user.id) not in stored_users_ids and int(user.user.id) not in users_to_send:
-                    users_to_send.append(user.user.id)
-            count += 1
-            if count == max_requests:
-                break
-            time.sleep(10)
+                if int(user.id) not in stored_users_ids and int(user.id) not in users_to_send:
+                    users_to_send.append(user.id)
+            logging.info(f"Usuários localizados: {len(users_to_send)}")
+            page += 1
         except Exception as ex:
             logging.error(ex)
             raise ex
