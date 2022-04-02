@@ -33,11 +33,6 @@ class Settings(BaseSettings):
     TWITCH_APP_ID: Optional[str] = None
     TWITCH_APP_SECRET: Optional[str] = None
 
-    OAUTH_TOKEN: Optional[str] = None
-    OAUTH_SECRET: Optional[str] = None
-    CONSUMER_KEY: Optional[str] = None
-    CONSUMER_SECRET: Optional[str] = None
-
     CHROME_DRIVER_PATH: Optional[str] = None
 
     @classmethod

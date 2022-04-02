@@ -5,7 +5,7 @@ import asyncio
 from app.db.repositories.auto_tasks_repository import AutoTasksRepository
 from app.db.repositories.kraken_repository import KrakenRepository
 from app.db.repositories.twitch_repository import TwitchRepository
-from app.db.repositories.twitter_repository import TwitterSendMessageRepository
+from app.db.repositories.twitter_send_message_repository import TwitterSendMessageRepository
 from app.db.uow import UnitOfWork
 from app.api.dependencies.get_db import engine
 

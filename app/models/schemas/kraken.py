@@ -51,3 +51,13 @@ class PostQueue(Base):
     post_status: PostStatus
     kraken_hand: KrakenHand
     name: Optional[str]
+
+
+class CreateTwitterSendMessageTask(Base):
+    twitter_handle: str
+    oauth_token: str
+    oauth_secret: str
+    consumer_key: str
+    consumer_secret: str
+    tag: str
+    message: str
