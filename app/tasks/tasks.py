@@ -88,6 +88,7 @@ async def automatic_twitter_send_message(self, payload):
     messages_per_hour = 25
     sleep_per_send = 100
     users_per_round = 50
+    max_requests = 20
     # busca por parametros os dados de envio
 
     twitter_integration = TwitterIntegration(
@@ -104,6 +105,7 @@ async def automatic_twitter_send_message(self, payload):
 
     logging.info(f"Usuários já enviados: {len(stored_users_ids)}")
     page = 1
+    count = 0
     logging.info("Começando processo de buscar os usuários")
     while len(users_to_send) <= users_per_round:
         try:
@@ -114,6 +116,9 @@ async def automatic_twitter_send_message(self, payload):
                     users_to_send.append(user.id)
             logging.info(f"Usuários localizados: {len(users_to_send)}")
             page += 1
+            count += 1
+            if count == max_requests:
+                break
         except Exception as ex:
             logging.error(ex)
             raise ex
