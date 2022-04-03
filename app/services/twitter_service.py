@@ -1,7 +1,9 @@
+from typing import List
+
 from app.db.repositories.auto_tasks_repository import AutoTasksRepository
 from app.db.repositories.twitter_tasks_repository import TwitterTasksRepository
 from app.models.entities.twitter_tasks import TwitterTasks
-from app.models.schemas.kraken import CreateTwitterSendMessageTask
+from app.models.schemas.kraken import CreateTwitterSendMessageTask, GetTwitterSendMessageTask
 from app import tasks
 
 
@@ -15,7 +17,7 @@ class TwitterServices:
         await self.twitter_tasks_repo.add(orm_model)
         return orm_model.id
 
-    async def trigger_send_message_task(self):
+    async def trigger_send_message_task(self, start_page: int):
         tasks_send_message = await self.twitter_tasks_repo.get_tasks()
         for task in tasks_send_message:
             payload = {
@@ -25,8 +27,23 @@ class TwitterServices:
                 'consumer_key': task.consumer_key,
                 'consumer_secret': task.consumer_secret,
                 'oauth_token': task.oauth_token,
-                'oauth_secret': task.oauth_secret
+                'oauth_secret': task.oauth_secret,
+                'start_page': start_page
             }
             tasks.twitter_send_message.apply_async(
                 args=[dict(payload)], connect_timeout=10
             )
+
+    async def edit_send_message(self, id: int, edit_twitter_send_message_task: CreateTwitterSendMessageTask):
+        orm_model = TwitterTasks(**edit_twitter_send_message_task.dict())
+        id = await self.twitter_tasks_repo.update_task(id, orm_model)
+        return id
+
+    async def get_send_message(self) -> List[GetTwitterSendMessageTask]:
+        orm_tasks = await self.twitter_tasks_repo.get_tasks()
+        response_list = []
+        for data in orm_tasks:
+            response_list.append(
+                GetTwitterSendMessageTask.from_orm(data)
+            )
+        return response_list

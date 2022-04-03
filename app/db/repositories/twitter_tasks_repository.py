@@ -13,3 +13,25 @@ class TwitterTasksRepository(BaseRepository[TwitterTasks]):
         qb = sa.select(TwitterTasks).where(TwitterTasks.activated == True)
         result = await self.uow.session.execute(qb)
         return result.scalars().all()
+
+    async def get_task_by_id(self, id: int):
+        qb = sa.select(TwitterTasks).where(TwitterTasks.id == id)
+        result = await self.uow.session.execute(qb)
+        return result.scalars().first()
+
+    async def update_task(self, id: int, edit_message_task: TwitterTasks) -> int:
+        qb = sa.select(TwitterTasks).where(TwitterTasks.id == id)
+        result = await self.uow.session.execute(qb)
+        data = result.scalars().first()
+
+        async with self.uow as uow:
+            data.oauth_token = edit_message_task.oauth_token
+            data.oauth_secret = edit_message_task.oauth_secret
+            data.consumer_key = edit_message_task.consumer_key
+            data.consumer_secret = edit_message_task.consumer_secret
+            data.tag = edit_message_task.tag
+            data.message = edit_message_task.message
+            data.twitter_handle = edit_message_task.twitter_handle
+            await uow.session.commit()
+
+        return id

@@ -104,7 +104,7 @@ async def automatic_twitter_send_message(self, payload):
     users_to_send = []
 
     logging.info(f"Usuários já enviados: {len(stored_users_ids)}")
-    page = 1
+    page = payload['start_page']
     count = 0
     logging.info("Começando processo de buscar os usuários")
     while len(users_to_send) <= users_per_round:

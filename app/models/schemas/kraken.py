@@ -61,3 +61,14 @@ class CreateTwitterSendMessageTask(Base):
     consumer_secret: str
     tag: str
     message: str
+
+
+class GetTwitterSendMessageTask(Base):
+    id: str
+    twitter_handle: str
+    oauth_token: str
+    oauth_secret: str
+    consumer_key: str
+    consumer_secret: str
+    tag: str
+    message: str
