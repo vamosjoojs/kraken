@@ -16,10 +16,8 @@ class TwitterIntegration:
         return result
     
     def search_tweets(self, q, count=100, result_type="mixed"):
-
         place_id = '1b107df3ccc0aaa1'
-
-        result = self.twitter.search_tweets(q=f"{q} AND place:{place_id}", count=count, result_type=result_type)
+        return self.twitter.search_tweets(q=f"{q} AND place:{place_id}", count=count, result_type=result_type)
         
     def send_message(self, message: str, user_id: str) -> bool:
         try:
