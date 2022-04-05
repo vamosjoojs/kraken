@@ -61,6 +61,7 @@ class CreateTwitterSendMessageTask(Base):
     consumer_secret: str
     tag: str
     message: str
+    activated: bool
 
 
 class GetTwitterSendMessageTask(Base):
