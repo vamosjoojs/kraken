@@ -14,11 +14,11 @@ app = Celery("broker", include=['app.tasks'])
 app.conf.update(broker_url=config.REDIS_URL,
                 result_backend=config.REDIS_URL)
 
-# app.conf.beat_schedule = {
-#     'send-messages': {
-#         'task': 'app.tasks.tasks.twitter_send_message',
-#         'schedule': crontab(hour='*/2')
-#     },
-# }
+app.conf.beat_schedule = {
+    'send-messages': {
+        'task': 'app.tasks.tasks.twitter_send_message',
+        'schedule': crontab(hour='*/2')
+    },
+}
 
 # app.conf.task_default_queue = celery_queues["default"][0]
