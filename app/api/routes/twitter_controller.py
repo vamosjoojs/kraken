@@ -49,5 +49,5 @@ async def edit_send_message_task(
     name="Kraken: Create send message task",
     status_code=201
 )
-async def trigger_send_message(start_page: int, twitter_service: TwitterServices = Depends(get_twitter_service)):
-    return await twitter_service.trigger_send_message_task(start_page)
+async def trigger_send_message(twitter_service: TwitterServices = Depends(get_twitter_service)):
+    return await twitter_service.trigger_send_message_task()

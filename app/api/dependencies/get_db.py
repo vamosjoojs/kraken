@@ -17,3 +17,4 @@ SessionLocal = sessionmaker(
 async def get_uow() -> AsyncGenerator[AsyncSession, None]:
     async with SessionLocal() as session:
         yield UnitOfWork(session)
+    engine.close()
