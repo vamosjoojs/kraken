@@ -9,7 +9,7 @@ class KrakenServices:
         self.kraken_repo = kraken_repo
 
     async def get_posts_queue_async(self) -> List[PostQueue]:
-        queue_clips = await self.kraken_repo.get_queue_posts()
+        queue_clips = self.kraken_repo.get_queue_posts()
 
         result_list = []
         for queue_clip in queue_clips:
