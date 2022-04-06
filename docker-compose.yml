@@ -17,13 +17,6 @@ services:
         command: redis-server
         ports:
             - "6379:6379"
-#
-#    beat:
-#        build:
-#            context: .
-#            dockerfile: ./docker/dockerfile.beat
-#        env_file:
-#            - .env
 
     worker:
         build:
