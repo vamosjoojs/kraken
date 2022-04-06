@@ -13,6 +13,6 @@ router = APIRouter()
     status_code=200,
     response_model=List[PostQueue]
 )
-async def get_posts_queue(kraken_service: KrakenServices = Depends(get_kraken_service)):
-    queue_posts = await kraken_service.get_posts_queue_async()
+def get_posts_queue(kraken_service: KrakenServices = Depends(get_kraken_service)):
+    queue_posts = kraken_service.get_posts_queue_async()
     return queue_posts

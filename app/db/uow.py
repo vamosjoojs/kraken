@@ -1,22 +1,22 @@
 from __future__ import annotations
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 class UnitOfWork:
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: Session):
         self.session = session
 
-    async def __aenter__(self) -> UnitOfWork:
+    def __enter__(self) -> UnitOfWork:
         return self
 
-    async def __aexit__(self, exc_type, exc_value, exc_traceback):
+    def __exit__(self, exc_type, exc_value, exc_traceback):
         if exc_type:
-            await self.rollback()
+            self.rollback()
         else:
-            await self.commit()
+            self.commit()
 
-    async def commit(self) -> None:
-        await self.session.commit()
+    def commit(self) -> None:
+        self.session.commit()
 
-    async def rollback(self) -> None:
-        await self.session.rollback()
+    def rollback(self) -> None:
+        self.session.rollback()

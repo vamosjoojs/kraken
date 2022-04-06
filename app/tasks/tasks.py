@@ -1,4 +1,3 @@
-import asyncio
 import datetime
 import os
 import time
@@ -23,35 +22,38 @@ from celery_app import app
 
 @app.task(bind=True, max_retries=5, base=DatabaseTask)
 def post_instagram(self, payload):
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(async_post_instagram(self, payload))
+    kraken_model = Kraken(id=payload['kraken_id'])
+    try:
+        change_status(self, kraken_model, PostStatus.INITIATED.value)
+        twitch_integration = TwitchIntegration()
+        change_status(self, kraken_model, PostStatus.DOWNLOADING_CLIP.value)
+        clip_path = twitch_integration.download_clip(payload["thumbnail"])
+
+        change_status(self, kraken_model, PostStatus.POSTING.value)
+        instagram_services = InstagramServices()
+        instagram_services.post_clip(payload["caption"], clip_path)
+        os.remove(clip_path)
+        change_status(self, kraken_model, PostStatus.COMPLETED.value)
+    except Exception as ex:
+        change_status(self, kraken_model, PostStatus.ERROR.value)
+        raise Exception(f"{ex}")
 
 
 @app.task(bind=True, max_retries=5, base=DatabaseTask)
 def automatic_post_instagram(self, payload):
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(getclips(self, payload))
-
-
-@app.task(bind=True, max_retries=5, base=DatabaseTask)
-def twitter_send_message(self):
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(automatic_twitter_send_message(self))
-
-
-async def getclips(self, payload):
     auto_tasks_repository = AutoTasksRepository(self.get_db)
     twitch_repository = TwitchRepository(self.get_db)
     while True:
         try:
-            auto_tasks = await auto_tasks_repository.get_instagram_state_switch(payload['auto_task_id'])
+            auto_tasks = auto_tasks_repository.get_instagram_state_switch(payload['auto_task_id'])
             if auto_tasks is None:
                 print("parando processo")
                 break
             twitch_integration = TwitchIntegration()
-            clips = twitch_integration.get_all_clips(start_at=datetime.datetime.fromisoformat(payload['initial_date']), first=99)
+            clips = twitch_integration.get_all_clips(start_at=datetime.datetime.fromisoformat(payload['initial_date']),
+                                                     first=99)
             for clip in clips['data']:
-                clip_stored = await twitch_repository.get_twitch_clips_by_clip_id(clip['id'])
+                clip_stored = twitch_repository.get_twitch_clips_by_clip_id(clip['id'])
                 if clip_stored is None and clip['creator_name'] == payload['creator_name']:
                     print(f"Clip localizado {clip['title']}")
                     post_instagram = PostInstagramClip(
@@ -60,7 +62,8 @@ async def getclips(self, payload):
                         clip_id=clip['id'],
                         clip_name=clip['title']
                     )
-                    requests.post("https://kraken-application.herokuapp.com/api/twitch/post_instagram_clip", data=post_instagram.json())
+                    requests.post("https://kraken-application.herokuapp.com/api/twitch/post_instagram_clip",
+                                  data=post_instagram.json())
                     print("Clips enfileirado")
         except Exception as ex:
             print(ex)
@@ -68,31 +71,8 @@ async def getclips(self, payload):
         time.sleep(60)
 
 
-async def change_status(self, kraken_model, new_status):
-    kraken_repository = KrakenRepository(self.get_db)
-    kraken_model.post_status = new_status
-    await kraken_repository.update_status(kraken_model)
-
-
-async def async_post_instagram(self, payload):
-    kraken_model = Kraken(id=payload['kraken_id'])
-    try:
-        await change_status(self, kraken_model, PostStatus.INITIATED.value)
-        twitch_integration = TwitchIntegration()
-        await change_status(self, kraken_model, PostStatus.DOWNLOADING_CLIP.value)
-        clip_path = twitch_integration.download_clip(payload["thumbnail"])
-
-        await change_status(self, kraken_model, PostStatus.POSTING.value)
-        instagram_services = InstagramServices()
-        instagram_services.post_clip(payload["caption"], clip_path)
-        os.remove(clip_path)
-        await change_status(self, kraken_model, PostStatus.COMPLETED.value)
-    except Exception as ex:
-        await change_status(self, kraken_model, PostStatus.ERROR.value)
-        raise Exception(f"{ex}")
-
-
-async def automatic_twitter_send_message(self):
+@app.task(bind=True, max_retries=5, base=DatabaseTask)
+def twitter_send_message(self):
     # busca por parametros os dados de envio
     messages_per_hour = 25
     sleep_per_send = 100
@@ -103,7 +83,7 @@ async def automatic_twitter_send_message(self):
     twitter_repository = TwitterSendMessageRepository(self.get_db)
     twitter_tasks_repository = TwitterTasksRepository(self.get_db)
 
-    tasks_send_message = await twitter_tasks_repository.get_tasks()
+    tasks_send_message = twitter_tasks_repository.get_tasks()
     for task in tasks_send_message:
         payload = {
             'twitter_handler': task.twitter_handle,
@@ -122,7 +102,7 @@ async def automatic_twitter_send_message(self):
             payload['oauth_secret']
         )
 
-        stored_users = await twitter_repository.get_users_by_twitter_handle(payload['twitter_handler'])
+        stored_users = twitter_repository.get_users_by_twitter_handle(payload['twitter_handler'])
         stored_users_ids = [x.user_id for x in stored_users]
         sended_users = []
         users_to_send = []
@@ -161,8 +141,14 @@ async def automatic_twitter_send_message(self):
             )
             if sended:
                 sended_users.append(user_id)
-                await twitter_repository.add(twitter_orm)
+                twitter_repository.add(twitter_orm)
                 time.sleep(sleep_per_send)
             else:
                 twitter_orm.sended = False
-                await twitter_repository.add(twitter_orm)
+                twitter_repository.add(twitter_orm)
+
+
+def change_status(self, kraken_model, new_status):
+    kraken_repository = KrakenRepository(self.get_db)
+    kraken_model.post_status = new_status
+    kraken_repository.update_status(kraken_model)

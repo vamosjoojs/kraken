@@ -50,7 +50,7 @@ class Settings(BaseSettings):
             return v
 
         user, password, host, db, port = cls.db_fields()
-        return f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{db}"
+        return f"postgresql://{user}:{password}@{host}:{port}/{db}"
 
     class Config:
         env_file = ".env"

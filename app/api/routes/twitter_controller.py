@@ -14,10 +14,10 @@ router = APIRouter()
     status_code=200,
     response_model=int
 )
-async def create_send_message_task(
+def create_send_message_task(
         create_twitter_send_message_task: CreateTwitterSendMessageTask,
         twitter_service: TwitterServices = Depends(get_twitter_service)):
-    return await twitter_service.create_send_message(create_twitter_send_message_task)
+    return twitter_service.create_send_message(create_twitter_send_message_task)
 
 
 @router.get(
@@ -28,7 +28,7 @@ async def create_send_message_task(
 )
 async def get_send_message_task(
         twitter_service: TwitterServices = Depends(get_twitter_service)):
-    return await twitter_service.get_send_message()
+    return twitter_service.get_send_message()
 
 
 @router.put(
@@ -37,11 +37,11 @@ async def get_send_message_task(
     status_code=200,
     response_model=int
 )
-async def edit_send_message_task(
+def edit_send_message_task(
         id: int,
         edit_twitter_send_message_task: CreateTwitterSendMessageTask,
         twitter_service: TwitterServices = Depends(get_twitter_service)):
-    return await twitter_service.edit_send_message(id, edit_twitter_send_message_task)
+    return twitter_service.edit_send_message(id, edit_twitter_send_message_task)
 
 
 @router.post(
@@ -49,5 +49,5 @@ async def edit_send_message_task(
     name="Kraken: Create send message task",
     status_code=201
 )
-async def trigger_send_message(twitter_service: TwitterServices = Depends(get_twitter_service)):
-    return await twitter_service.trigger_send_message_task()
+def trigger_send_message(twitter_service: TwitterServices = Depends(get_twitter_service)):
+    return twitter_service.trigger_send_message_task()

@@ -1,20 +1,16 @@
-from typing import AsyncGenerator
-
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.config.config import config
-from app.db.uow import UnitOfWork
 
-engine = create_async_engine(config.DATABASE_URI_ASYNC, echo=True, future=True)
+engine = create_engine(config.DATABASE_URI_ASYNC, pool_pre_ping=True)
 
-SessionLocal = sessionmaker(
-    engine, expire_on_commit=False, class_=AsyncSession, future=True
-)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-async def get_uow() -> AsyncGenerator[AsyncSession, None]:
-    async with SessionLocal() as session:
-        yield UnitOfWork(session)
-    engine.close()
+def get_uow():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
