@@ -11,7 +11,7 @@ class TwitterSendMessageRepository(BaseRepository[TwitterSendMessage]):
     def __init__(self, uow: UnitOfWork) -> None:
         super().__init__(uow, TwitterSendMessage)
 
-    async def get_users_by_twitter_handle(self, twitter_handle: str) -> List[TwitterSendMessage]:
+    def get_users_by_twitter_handle(self, twitter_handle: str) -> List[TwitterSendMessage]:
         qb = sa.select(TwitterSendMessage).where(TwitterSendMessage.twitter_handle == twitter_handle)
-        result = await self.uow.session.execute(qb)
+        result = self.uow.session.execute(qb)
         return result.scalars().all()
