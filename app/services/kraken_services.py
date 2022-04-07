@@ -8,7 +8,7 @@ class KrakenServices:
     def __init__(self, kraken_repo: KrakenRepository):
         self.kraken_repo = kraken_repo
 
-    async def get_posts_queue_async(self) -> List[PostQueue]:
+    def get_posts_queue_async(self) -> List[PostQueue]:
         queue_clips = self.kraken_repo.get_queue_posts()
 
         result_list = []

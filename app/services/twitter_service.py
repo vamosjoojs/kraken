@@ -32,7 +32,10 @@ class TwitterServices:
         orm_tasks = self.twitter_tasks_repo.get_tasks()
         response_list = []
         for data in orm_tasks:
-            total_sended = len(self.twitter_send_message_repo.get_users_by_twitter_handle(data.twitter_handle))
+            twitter_handle = data.twitter_handle
+            if data.use_same_db:
+                twitter_handle = data.use_same_db_twitter_handle
+            total_sended = len(self.twitter_send_message_repo.get_users_by_twitter_handle(twitter_handle))
             response = GetTwitterSendMessageTask.from_orm(data)
             response.total_sended = total_sended
             response_list.append(response)
