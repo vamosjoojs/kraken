@@ -85,8 +85,11 @@ def twitter_send_message(self):
 
     tasks_send_message = twitter_tasks_repository.get_tasks()
     for task in tasks_send_message:
+        twitter_handle = task.twitter_handle
+        if task.use_same_db:
+            twitter_handle = task.use_same_db_twitter_handle
         payload = {
-            'twitter_handler': task.twitter_handle,
+            'twitter_handler': twitter_handle,
             'tag': task.tag,
             'message': task.message,
             'consumer_key': task.consumer_key,

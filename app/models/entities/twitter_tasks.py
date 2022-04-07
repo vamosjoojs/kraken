@@ -11,3 +11,5 @@ class TwitterTasks(BaseModel):
     message = Column(String, nullable=False)
     twitter_handle = Column(String, nullable=False)
     activated = Column(Boolean, nullable=False, default=True)
+    use_same_db = Column(Boolean, default=False)
+    use_same_db_twitter_handle = Column(String)

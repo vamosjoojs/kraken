@@ -66,6 +66,7 @@ class CreateTwitterSendMessageTask(Base):
 
 class GetTwitterSendMessageTask(Base):
     id: str
+    total_sended: Optional[int]
     twitter_handle: str
     oauth_token: str
     oauth_secret: str

@@ -3,6 +3,7 @@ from fastapi.param_functions import Depends
 from app.db.repositories.auto_tasks_repository import AutoTasksRepository
 from app.db.repositories.kraken_repository import KrakenRepository
 from app.db.repositories.twitter_tasks_repository import TwitterTasksRepository
+from app.db.repositories.twitter_send_message_repository import TwitterSendMessageRepository
 from app.db.uow import UnitOfWork
 from sqlalchemy.orm import Session
 
@@ -39,4 +40,5 @@ def get_twitter_service(session: Session = Depends(get_uow)) -> TwitterServices:
     uow = UnitOfWork(session)
     auto_tasks_repository = AutoTasksRepository(uow)
     twitter_tasks = TwitterTasksRepository(uow)
-    return TwitterServices(auto_tasks_repository, twitter_tasks)
+    twitter_send_message = TwitterSendMessageRepository(uow)
+    return TwitterServices(auto_tasks_repository, twitter_tasks, twitter_send_message)
