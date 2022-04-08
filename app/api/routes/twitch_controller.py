@@ -27,6 +27,15 @@ def post_clip_instagram(payload: PostInstagramClip, twitch_service: TwitchServic
 
 
 @router.post(
+    "/test_selenium",
+    name="Kraken: Queue instagram twitch clip",
+    status_code=201
+)
+def teste(twitch_service: TwitchServices = Depends(get_twitch_service)):
+    twitch_service.post_clip_instagram_manual()
+
+
+@router.post(
     "/automatic_post_instagram_clip",
     name="Kraken: Automatic queue instagram twitch clip",
     status_code=201

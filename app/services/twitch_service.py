@@ -10,6 +10,7 @@ from app.models.schemas.kraken import (
 )
 from app.integrations.twitch_integration import TwitchIntegration
 from app import tasks
+from app.services.instagram_service import InstagramServices
 
 
 class TwitchServices:
@@ -84,4 +85,11 @@ class TwitchServices:
 
     def disable_automatic_post_clip_instagram(self, id: int):
         self.auto_tasks_repo.disable_task(id)
+
+
+    def post_clip_instagram_manual(self):
+        instagram_services = InstagramServices()
+        is_posted = instagram_services.post_clip('teste', r'C:\Users\davib\Documents\pessoal\bots\kraken\app\downloads\AT-cm_faBOl8RQXmF_cXyp4bJ3bA.mp4')
+        if is_posted:
+            print("fff")
 
