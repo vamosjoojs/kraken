@@ -78,16 +78,18 @@ class InstagramIntegration:
 
             sleep(4)
             self.driver.find_element(By.XPATH,
-                                '/html/body/div[6]/div[2]/div/div/div/div[2]/div[1]/div/div/div/div[1]/div/div[2]/div/button').click()
+                                     '/html/body/div[4]/div[2]/div/div/div/div[2]/div[1]/div/div/div/div[1]/div/div[2]/div/button').click()
+
             sleep(4)
             self.driver.find_element(By.XPATH,
-                                '/html/body/div[6]/div[2]/div/div/div/div[2]/div[1]/div/div/div/div[1]/div/div[1]/div/button[1]').click()
+                                '/html/body/div[4]/div[2]/div/div/div/div[2]/div[1]/div/div/div/div[1]/div/div[1]/div/button[1]').click()
+
             sleep(4)
-            self.driver.find_element(By.XPATH,'/html/body/div[6]/div[2]/div/div/div/div[1]/div/div/div[3]/div/button').click()
+            self.driver.find_element(By.XPATH,'/html/body/div[4]/div[2]/div/div/div/div[1]/div/div/div[3]/div/button').click()
             sleep(4)
-            self.driver.find_element(By.XPATH,'/html/body/div[6]/div[2]/div/div/div/div[1]/div/div/div[3]/div/button').click()
+            self.driver.find_element(By.XPATH,'/html/body/div[4]/div[2]/div/div/div/div[1]/div/div/div[3]/div/button').click()
             sleep(4)
-            caption_field = self.driver.find_element(By.XPATH, "/html/body/div[6]/div[2]/div/div/div/div[2]/div[2]/div/div/div/div[2]/div[1]/textarea")
+            caption_field = self.driver.find_element(By.XPATH, "/html/body/div[4]/div[2]/div/div/div/div[2]/div[2]/div/div/div/div[2]/div[1]/textarea")
             sleep(4)
             caption_field.send_keys(self.caption)
             self.driver.find_element(By.XPATH,"//button[contains(text(),'Share')]").click()

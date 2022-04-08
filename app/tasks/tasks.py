@@ -31,9 +31,12 @@ def post_instagram(self, payload):
 
         change_status(self, kraken_model, PostStatus.POSTING.value)
         instagram_services = InstagramServices()
-        instagram_services.post_clip(payload["caption"], clip_path)
+        is_posted = instagram_services.post_clip(payload["caption"], clip_path)
         os.remove(clip_path)
-        change_status(self, kraken_model, PostStatus.COMPLETED.value)
+        if not is_posted:
+            change_status(self, kraken_model, PostStatus.ERROR.value)
+        else:
+            change_status(self, kraken_model, PostStatus.COMPLETED.value)
     except Exception as ex:
         change_status(self, kraken_model, PostStatus.ERROR.value)
         raise Exception(f"{ex}")
