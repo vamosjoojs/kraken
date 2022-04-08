@@ -77,6 +77,7 @@ class InstagramIntegration:
             self.drag_and_drop_file(drop_target, self.video_path)
 
             sleep(8)
+            print(self.driver.get_screenshot_as_base64())
             self.driver.find_element(By.XPATH,
                                      '/html/body/div[6]/div[2]/div/div/div/div[2]/div[1]/div/div/div/div[1]/div/div[2]/div/button').click()
             sleep(4)
