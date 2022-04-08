@@ -21,5 +21,4 @@ class KrakenServices:
             )
             result_list.append(post_queue)
 
-        return result_list
-
+        return sorted(result_list, key=lambda x: x.created_at, reverse=True)

@@ -1,5 +1,6 @@
 from time import sleep
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from app.config.config import config
 from selenium.webdriver.chrome.options import Options
@@ -75,10 +76,18 @@ class InstagramIntegration:
             sleep(4)
 
             self.drag_and_drop_file(drop_target, self.video_path)
+            sleep(8)
+            upload = True
+            while upload is True:
+                try:
+                    self.driver.find_element(By.XPATH,
+                                             '/html/body/div[6]/div[2]/div/div/div/div[2]/div[1]/div/div/div/div[1]/div/div[2]/div/button').click()
+                    upload = False
+                except NoSuchElementException:
+                    print("ainda não fez o upload.")
+                    sleep(10)
+                    continue
 
-            sleep(30)
-            self.driver.find_element(By.XPATH,
-                                     '/html/body/div[6]/div[2]/div/div/div/div[2]/div[1]/div/div/div/div[1]/div/div[2]/div/button').click()
             sleep(4)
             self.driver.find_element(By.XPATH,
                                 '/html/body/div[6]/div[2]/div/div/div/div[2]/div[1]/div/div/div/div[1]/div/div[1]/div/button[1]').click()
