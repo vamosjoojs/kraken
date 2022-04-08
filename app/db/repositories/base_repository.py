@@ -48,11 +48,10 @@ class BaseRepository(Generic[MappingType]):
         return result, total, pages
 
     def paginate_query(
-        self, select: Query, model: Type[MappingType], page: int, page_size: int
+        self, select: Query, page: int, page_size: int
     ):
         result, total, pages = self._paginate(select, page, page_size)
         registers = result.unique().scalars().all()
-        items = list(map(model.from_orm, registers))
         return Paginated(
-            total_items=total, current_page=page, total_pages=pages, items=items
+            total_items=total, current_page=page, total_pages=pages, items=registers
         )

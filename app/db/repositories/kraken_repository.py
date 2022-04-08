@@ -1,4 +1,4 @@
-from typing import List
+from sqlalchemy import desc
 from sqlalchemy.orm import joinedload
 
 import sqlalchemy as sa
@@ -22,8 +22,7 @@ class KrakenRepository(BaseRepository[Kraken]):
 
         return kraken_model.id
 
-    def get_queue_posts(self) -> List[Kraken]:
-        qb = sa.select(Kraken).options(joinedload(Kraken.twitch_clips))
+    def get_queue_posts(self, page: int, page_size: int):
+        qb = sa.select(Kraken).options(joinedload(Kraken.twitch_clips)).order_by(desc(Kraken.created_at))
 
-        result = self.uow.session.execute(qb)
-        return result.scalars().all()
+        return self.paginate_query(qb, page, page_size)
