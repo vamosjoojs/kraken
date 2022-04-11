@@ -21,8 +21,9 @@ def get_twitch_service(session: Session = Depends(get_uow)) -> TwitchServices:
     repository = TwitchRepository(uow)
     kraken_repository = KrakenRepository(uow)
     auto_tasks_repository = AutoTasksRepository(uow)
+    twitter_tasks = TwitterTasksRepository(uow)
 
-    return TwitchServices(repository, kraken_repository, auto_tasks_repository)
+    return TwitchServices(repository, kraken_repository, twitter_tasks, auto_tasks_repository)
 
 
 def get_instagram_service(

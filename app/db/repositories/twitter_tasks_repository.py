@@ -19,6 +19,11 @@ class TwitterTasksRepository(BaseRepository[TwitterTasks]):
         result = self.uow.session.execute(qb)
         return result.scalars().first()
 
+    def get_task_by_twitter_handle(self, twitter_handle: str) -> TwitterTasks:
+        qb = sa.select(TwitterTasks).where(TwitterTasks.twitter_handle == twitter_handle)
+        result = self.uow.session.execute(qb)
+        return result.scalars().first()
+
     def update_task(self, id: int, edit_message_task: TwitterTasks) -> int:
         qb = sa.select(TwitterTasks).where(TwitterTasks.id == id)
         result = self.uow.session.execute(qb)

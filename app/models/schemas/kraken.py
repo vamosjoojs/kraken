@@ -31,9 +31,18 @@ class PostStatus(Enum):
 
 class KrakenHand(Enum):
     INSTAGRAM = "INSTAGRAM"
+    TWITTER = "TWITTER"
 
 
 class PostInstagramClip(Base):
+    thumbnail: str
+    caption: str
+    clip_id: str
+    clip_name: str
+
+
+class PostTwitterClip(Base):
+    twitter_handle: str
     thumbnail: str
     caption: str
     clip_id: str

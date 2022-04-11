@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from app.api.dependencies.kraken import get_twitch_service
-from app.models.schemas.kraken import PostInstagramClip, TwitchClipsResponsePagination, AutomaticPostInstagramClip
+from app.models.schemas.kraken import PostInstagramClip, TwitchClipsResponsePagination, AutomaticPostInstagramClip, \
+    PostTwitterClip
 from app.services.twitch_service import TwitchServices
 
 router = APIRouter()
@@ -61,3 +62,11 @@ def disable_automatic_post_clip_instagram(id: int, twitch_service: TwitchService
 def change_post_status(payload: AutomaticPostInstagramClip, twitch_service: TwitchServices = Depends(get_twitch_service)):
     twitch_service.automatic_post_clip_instagram(payload)
 
+
+@router.post(
+    "/post_twitter_clip",
+    name="Kraken: Post twitch clip in Twitter",
+    status_code=200
+)
+def post_clip_twitter(payload: PostTwitterClip, twitch_service: TwitchServices = Depends(get_twitch_service)):
+    twitch_service.post_clip_twitter(payload)

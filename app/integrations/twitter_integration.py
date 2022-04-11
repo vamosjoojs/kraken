@@ -28,4 +28,11 @@ class TwitterIntegration:
             print(f"mensagem não enviada: {ex}")
             return False
 
-
+    def post_media(self, clip_path: str, status: str) -> bool:
+        try:
+            upload_result = self.twitter.media_upload(clip_path)
+            self.twitter.update_status(status=status, media_ids=[upload_result.media_id_string])
+            return True
+        except Exception as ex:
+            print(ex)
+            return False
