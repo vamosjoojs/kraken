@@ -10,7 +10,7 @@ class TwitterTasksRepository(BaseRepository[TwitterTasks]):
         super().__init__(uow, TwitterTasks)
 
     def get_tasks(self) -> List[TwitterTasks]:
-        qb = sa.select(TwitterTasks)
+        qb = sa.select(TwitterTasks).where(TwitterTasks.activated.is_(True))
         result = self.uow.session.execute(qb)
         return result.scalars().all()
 
