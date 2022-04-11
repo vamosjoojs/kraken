@@ -5,14 +5,18 @@ from typing import Optional, List
 from app.models.schemas.base import Base
 
 
+class KrakenPosted(Base):
+    is_posted: bool
+    kraken_hand: str
+
+
 class TwitchClipsResponse(Base):
     url: Optional[str]
     thumbnail_url: Optional[str]
     creator_name: Optional[str]
     title: Optional[str]
     clip_id: Optional[str]
-    is_posted: Optional[bool]
-    kraken_hand: Optional[str]
+    kraken_posted: Optional[List[KrakenPosted]]
 
 
 class TwitchClipsResponsePagination(Base):

@@ -66,7 +66,7 @@ def change_post_status(payload: AutomaticPostInstagramClip, twitch_service: Twit
 @router.post(
     "/post_twitter_clip",
     name="Kraken: Post twitch clip in Twitter",
-    status_code=200
+    status_code=201
 )
 def post_clip_twitter(payload: PostTwitterClip, twitch_service: TwitchServices = Depends(get_twitch_service)):
     twitch_service.post_clip_twitter(payload)

@@ -8,7 +8,7 @@ from app.integrations.twitter_integration import TwitterIntegration
 from app.models.entities import Kraken, TwitchClips, AutoTasks
 from app.models.schemas.kraken import (
     TwitchClipsResponse, PostInstagramClip, PostStatus, KrakenHand, TwitchClipsResponsePagination,
-    AutomaticPostInstagramClip, PostTwitterClip,
+    AutomaticPostInstagramClip, PostTwitterClip, KrakenPosted,
 )
 from app.integrations.twitch_integration import TwitchIntegration
 from app import tasks
@@ -30,10 +30,16 @@ class TwitchServices:
             response_model = TwitchClipsResponse(**clip)
             response_model.clip_id = clip['id']
             clip_stored = self.twitch_repo.get_twitch_clips_by_clip_id(clip['id'])
-            response_model.is_posted = False
-            if clip_stored and clip_stored.kraken[0].post_status != 'ERROR':
-                response_model.is_posted = True
-                response_model.kraken_hand = clip_stored.kraken[0].kraken_hand
+            if clip_stored and len(clip_stored.kraken) > 0:
+                kraken_response = []
+                for clip_posted in clip_stored.kraken:
+                    if clip_posted.post_status != 'ERROR':
+                        kraken_posted = KrakenPosted(
+                            is_posted=True,
+                            kraken_hand=clip_posted.kraken_hand
+                        )
+                        kraken_response.append(kraken_posted)
+                response_model.kraken_posted = kraken_response
             list_twitch_clip_response.append(response_model)
 
         response = TwitchClipsResponsePagination(twitch_response=list_twitch_clip_response, cursor=clips['pagination']['cursor'])
@@ -106,7 +112,7 @@ class TwitchServices:
         twitch = self.twitch_repo.add(twitch_model)
 
         kraken_model = Kraken(
-            post_status=PostStatus.CREATED,
+            post_status=PostStatus.CREATED.value,
             kraken_hand=KrakenHand.TWITTER.value,
             twitch_clips_id=twitch.id,
             caption=payload.caption
