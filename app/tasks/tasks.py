@@ -113,7 +113,7 @@ def twitter_send_message(self, task):
                         users_to_send.append(user.user.id)
                 logging.info(f"Usuários localizados: {len(users_to_send)}")
                 count += 1
-                if count == max_requests:
+                if count == max_requests or len(users_to_send) <= users_per_round:
                     break
         except Exception as ex:
             logging.error(ex)
