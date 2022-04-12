@@ -17,10 +17,10 @@ class TwitchRepository(BaseRepository[TwitchClips]):
         result = self.uow.session.execute(qb)
         return result.scalars().first()
 
-    def get_twitch_clips_by_clip_id(self, clip_id: str) -> TwitchClips:
+    def get_twitch_clips_by_clip_id(self, clip_id: str) -> List[TwitchClips]:
         qb = sa.select(TwitchClips)\
             .options(joinedload(TwitchClips.kraken))\
             .where(TwitchClips.clip_id == clip_id)
 
         result = self.uow.session.execute(qb)
-        return result.scalars().first()
+        return result.scalars().unique().all()

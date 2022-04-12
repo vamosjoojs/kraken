@@ -30,16 +30,17 @@ class TwitchServices:
             response_model = TwitchClipsResponse(**clip)
             response_model.clip_id = clip['id']
             clip_stored = self.twitch_repo.get_twitch_clips_by_clip_id(clip['id'])
-            if clip_stored and len(clip_stored.kraken) > 0:
-                kraken_response = []
-                for clip_posted in clip_stored.kraken:
-                    if clip_posted.post_status != 'ERROR':
-                        kraken_posted = KrakenPosted(
-                            is_posted=True,
-                            kraken_hand=clip_posted.kraken_hand
-                        )
-                        kraken_response.append(kraken_posted)
-                response_model.kraken_posted = kraken_response
+            kraken_response = []
+            if len(clip_stored) > 0:
+                for clip in clip_stored:
+                    if len(clip.kraken) > 0: # kraken e twitch clips é one-to-one
+                        if clip.kraken[0].post_status != 'ERROR':
+                            kraken_posted = KrakenPosted(
+                                is_posted=True,
+                                kraken_hand=clip.kraken[0].kraken_hand
+                            )
+                            kraken_response.append(kraken_posted)
+            response_model.kraken_posted = kraken_response
             list_twitch_clip_response.append(response_model)
 
         response = TwitchClipsResponsePagination(twitch_response=list_twitch_clip_response, cursor=clips['pagination']['cursor'])
@@ -133,9 +134,9 @@ class TwitchServices:
         posted = twitter_integration.post_media(clip_path, payload.caption)
 
         if posted:
-            kraken_model.post_status = PostStatus.COMPLETED
+            kraken_model.post_status = PostStatus.COMPLETED.value
         else:
-            kraken_model.post_status = PostStatus.ERROR
+            kraken_model.post_status = PostStatus.ERROR.value
         self.kraken_repo.update_status(kraken_model)
 
 
