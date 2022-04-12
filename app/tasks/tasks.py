@@ -80,7 +80,6 @@ def twitter_send_message(self, task):
     messages_per_hour = 25
     sleep_per_send = 100
     users_per_round = 50
-    max_requests = 20
     # busca por parametros os dados de envio
 
     twitter_repository = TwitterSendMessageRepository(self.get_db)
@@ -101,23 +100,16 @@ def twitter_send_message(self, task):
     users_to_send = []
 
     logging.info(f"Usuários já enviados: {len(stored_users_ids)}")
-    count = 0
     logging.info("Começando processo de buscar os usuários")
-    while len(users_to_send) <= users_per_round:
-        try:
-            for tag in task['tag'].split('|'):
-                users_by_tag = twitter_integration.search_tweets(tag)
-                logging.info(f"Usuários buscados na request: {len(users_by_tag)} na tag {tag}")
-                for user in users_by_tag:
-                    if int(user.user.id) not in stored_users_ids and int(user.user.id) not in users_to_send:
-                        users_to_send.append(user.user.id)
-                logging.info(f"Usuários localizados: {len(users_to_send)}")
-                count += 1
-                if count == max_requests or len(users_to_send) <= users_per_round:
-                    break
-        except Exception as ex:
-            logging.error(ex)
-            raise ex
+    for tag in task['tag'].split('|'):
+        users_by_tag = twitter_integration.search_tweets(tag)
+        logging.info(f"Usuários buscados na request: {len(users_by_tag)} na tag {tag}")
+        for user in users_by_tag:
+            if int(user.user.id) not in stored_users_ids and int(user.user.id) not in users_to_send:
+                users_to_send.append(user.user.id)
+        logging.info(f"Usuários localizados: {len(users_to_send)}")
+        if len(users_to_send) <= users_per_round:
+            break
 
     logging.info(f"Localizado: {len(users_to_send)} usuários para o envio.")
 
