@@ -19,9 +19,10 @@ class TwitterServices:
         self.twitter_tasks_repo.add(orm_model)
         return orm_model.id
 
-    @staticmethod
-    def trigger_send_message_task():
-        tasks.twitter_send_message.apply_async(connect_timeout=10)
+    def trigger_send_message_task(self):
+        tasks_send_message = self.twitter_tasks_repo.get_tasks()
+        for task in tasks_send_message:
+            tasks.twitter_send_message.apply_async(connect_timeout=10, args=[task.__dict__])
 
     def edit_send_message(self, id: int, edit_twitter_send_message_task: CreateTwitterSendMessageTask):
         orm_model = TwitterTasks(**edit_twitter_send_message_task.dict())

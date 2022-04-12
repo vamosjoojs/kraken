@@ -75,7 +75,7 @@ def automatic_post_instagram(self, payload):
 
 
 @app.task(bind=True, max_retries=5, base=DatabaseTask)
-def twitter_send_message(self):
+def twitter_send_message(self, task):
     # busca por parametros os dados de envio
     messages_per_hour = 25
     sleep_per_send = 100
@@ -84,74 +84,61 @@ def twitter_send_message(self):
     # busca por parametros os dados de envio
 
     twitter_repository = TwitterSendMessageRepository(self.get_db)
-    twitter_tasks_repository = TwitterTasksRepository(self.get_db)
 
-    tasks_send_message = twitter_tasks_repository.get_tasks()
-    for task in tasks_send_message:
-        twitter_handle = task.twitter_handle
-        if task.use_same_db:
-            twitter_handle = task.use_same_db_twitter_handle
-        payload = {
-            'twitter_handler': twitter_handle,
-            'tag': task.tag,
-            'message': task.message,
-            'consumer_key': task.consumer_key,
-            'consumer_secret': task.consumer_secret,
-            'oauth_token': task.oauth_token,
-            'oauth_secret': task.oauth_secret,
-        }
+    if task['use_same_db']:
+        task['twitter_handle'] = task['use_same_db_twitter_handle']
 
-        twitter_integration = TwitterIntegration(
-            payload['consumer_key'],
-            payload['consumer_secret'],
-            payload['oauth_token'],
-            payload['oauth_secret']
+    twitter_integration = TwitterIntegration(
+        task['consumer_key'],
+        task['consumer_secret'],
+        task['oauth_token'],
+        task['oauth_secret']
+    )
+
+    stored_users = twitter_repository.get_users_by_twitter_handle(task['twitter_handler'])
+    stored_users_ids = [x.user_id for x in stored_users]
+    sended_users = []
+    users_to_send = []
+
+    logging.info(f"Usuários já enviados: {len(stored_users_ids)}")
+    count = 0
+    logging.info("Começando processo de buscar os usuários")
+    while len(users_to_send) <= users_per_round:
+        try:
+            for tag in task['tag'].split('|'):
+                users_by_tag = twitter_integration.search_tweets(tag)
+                logging.info(f"Usuários buscados na request: {len(users_by_tag)} na tag {tag}")
+                for user in users_by_tag:
+                    if int(user.user.id) not in stored_users_ids and int(user.user.id) not in users_to_send:
+                        users_to_send.append(user.user.id)
+                logging.info(f"Usuários localizados: {len(users_to_send)}")
+                count += 1
+                if count == max_requests:
+                    break
+        except Exception as ex:
+            logging.error(ex)
+            raise ex
+
+    logging.info(f"Localizado: {len(users_to_send)} usuários para o envio.")
+
+    for user_id in users_to_send:
+        if len(sended_users) == messages_per_hour:
+            break
+
+        sended = twitter_integration.send_message(task['message'], user_id)
+        logging.info(f"Mensagem enviada para {user_id}")
+        twitter_orm = TwitterSendMessage(
+            user_id=user_id,
+            sended=True,
+            twitter_handle=task['twitter_handler']
         )
-
-        stored_users = twitter_repository.get_users_by_twitter_handle(payload['twitter_handler'])
-        stored_users_ids = [x.user_id for x in stored_users]
-        sended_users = []
-        users_to_send = []
-
-        logging.info(f"Usuários já enviados: {len(stored_users_ids)}")
-        count = 0
-        logging.info("Começando processo de buscar os usuários")
-        while len(users_to_send) <= users_per_round:
-            try:
-                for tag in payload['tag'].split('|'):
-                    users_by_tag = twitter_integration.search_tweets(tag)
-                    logging.info(f"Usuários buscados na request: {len(users_by_tag)} na tag {tag}")
-                    for user in users_by_tag:
-                        if int(user.user.id) not in stored_users_ids and int(user.user.id) not in users_to_send:
-                            users_to_send.append(user.user.id)
-                    logging.info(f"Usuários localizados: {len(users_to_send)}")
-                    count += 1
-                    if count == max_requests:
-                        break
-            except Exception as ex:
-                logging.error(ex)
-                raise ex
-
-        logging.info(f"Localizado: {len(users_to_send)} usuários para o envio.")
-
-        for user_id in users_to_send:
-            if len(sended_users) == messages_per_hour:
-                break
-
-            sended = twitter_integration.send_message(payload['message'], user_id)
-            logging.info(f"Mensagem enviada para {user_id}")
-            twitter_orm = TwitterSendMessage(
-                user_id=user_id,
-                sended=True,
-                twitter_handle=payload['twitter_handler']
-            )
-            if sended:
-                sended_users.append(user_id)
-                twitter_repository.add(twitter_orm)
-                time.sleep(sleep_per_send)
-            else:
-                twitter_orm.sended = False
-                twitter_repository.add(twitter_orm)
+        if sended:
+            sended_users.append(user_id)
+            twitter_repository.add(twitter_orm)
+            time.sleep(sleep_per_send)
+        else:
+            twitter_orm.sended = False
+            twitter_repository.add(twitter_orm)
 
 
 def change_status(self, kraken_model, new_status):
