@@ -19,22 +19,9 @@ class TwitterServices:
         self.twitter_tasks_repo.add(orm_model)
         return orm_model.id
 
-    def trigger_send_message_task(self):
-        tasks_send_message = self.twitter_tasks_repo.get_tasks()
-        for task in tasks_send_message:
-            payload = {
-                'oauth_token': task.oauth_token,
-                'oauth_secret': task.oauth_secret,
-                'consumer_key': task.consumer_key,
-                'consumer_secret': task.consumer_secret,
-                'tag': task.tag,
-                'message': task.message,
-                'twitter_handle': task.twitter_handle,
-                'activated': task.activated,
-                'use_same_db': task.use_same_db,
-                'use_same_db_twitter_handle': task.use_same_db_twitter_handle
-            }
-            tasks.twitter_send_message.apply_async(connect_timeout=10, args=[payload])
+    @staticmethod
+    def trigger_send_message_task():
+        tasks.twitter_send_message.apply_async(connect_timeout=10)
 
     def edit_send_message(self, id: int, edit_twitter_send_message_task: CreateTwitterSendMessageTask):
         orm_model = TwitterTasks(**edit_twitter_send_message_task.dict())

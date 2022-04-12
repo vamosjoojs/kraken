@@ -75,7 +75,7 @@ def automatic_post_instagram(self, payload):
 
 
 @app.task(bind=True, max_retries=5, base=DatabaseTask)
-def twitter_send_message(self, task):
+def twitter_send_message(self):
     # busca por parametros os dados de envio
     messages_per_hour = 25
     sleep_per_send = 100
@@ -83,54 +83,58 @@ def twitter_send_message(self, task):
     # busca por parametros os dados de envio
 
     twitter_repository = TwitterSendMessageRepository(self.get_db)
+    twitter_tasks_repo = TwitterTasksRepository(self.get_db)
 
-    if task['use_same_db']:
-        task['twitter_handle'] = task['use_same_db_twitter_handle']
+    tasks_send_message = twitter_tasks_repo.get_tasks()
+    for task in tasks_send_message:
+        twitter_handle = task.twitter_handle
+        if task.use_same_db:
+            twitter_handle = task.use_same_db_twitter_handle
 
-    twitter_integration = TwitterIntegration(
-        task['consumer_key'],
-        task['consumer_secret'],
-        task['oauth_token'],
-        task['oauth_secret']
-    )
-
-    stored_users = twitter_repository.get_users_by_twitter_handle(task['twitter_handle'])
-    stored_users_ids = [x.user_id for x in stored_users]
-    sended_users = []
-    users_to_send = []
-
-    logging.info(f"Usuários já enviados: {len(stored_users_ids)}")
-    logging.info("Começando processo de buscar os usuários")
-    for tag in task['tag'].split('|'):
-        users_by_tag = twitter_integration.search_tweets(tag)
-        logging.info(f"Usuários buscados na request: {len(users_by_tag)} na tag {tag}")
-        for user in users_by_tag:
-            if int(user.user.id) not in stored_users_ids and int(user.user.id) not in users_to_send:
-                users_to_send.append(user.user.id)
-        logging.info(f"Usuários localizados: {len(users_to_send)}")
-        if len(users_to_send) <= users_per_round:
-            break
-
-    logging.info(f"Localizado: {len(users_to_send)} usuários para o envio.")
-
-    for user_id in users_to_send:
-        if len(sended_users) == messages_per_hour:
-            break
-
-        sended = twitter_integration.send_message(task['message'], user_id)
-        logging.info(f"Mensagem enviada para {user_id}")
-        twitter_orm = TwitterSendMessage(
-            user_id=user_id,
-            sended=True,
-            twitter_handle=task['twitter_handle']
+        twitter_integration = TwitterIntegration(
+            task.consumer_key,
+            task.consumer_secret,
+            task.oauth_token,
+            task.oauth_secret
         )
-        if sended:
-            sended_users.append(user_id)
-            twitter_repository.add(twitter_orm)
-            time.sleep(sleep_per_send)
-        else:
-            twitter_orm.sended = False
-            twitter_repository.add(twitter_orm)
+
+        stored_users = twitter_repository.get_users_by_twitter_handle(twitter_handle)
+        stored_users_ids = [x.user_id for x in stored_users]
+        sended_users = []
+        users_to_send = []
+
+        logging.info(f"Usuários já enviados: {len(stored_users_ids)}")
+        logging.info("Começando processo de buscar os usuários")
+        for tag in task.tag.split('|'):
+            users_by_tag = twitter_integration.search_tweets(tag)
+            logging.info(f"Usuários buscados na request: {len(users_by_tag)} na tag {tag}")
+            for user in users_by_tag:
+                if int(user.user.id) not in stored_users_ids and int(user.user.id) not in users_to_send:
+                    users_to_send.append(user.user.id)
+            logging.info(f"Usuários localizados: {len(users_to_send)}")
+            if len(users_to_send) <= users_per_round:
+                break
+
+        logging.info(f"Localizado: {len(users_to_send)} usuários para o envio.")
+
+        for user_id in users_to_send:
+            if len(sended_users) == messages_per_hour:
+                break
+
+            sended = twitter_integration.send_message(task.message, user_id)
+            logging.info(f"Mensagem enviada para {user_id}")
+            twitter_orm = TwitterSendMessage(
+                user_id=user_id,
+                sended=True,
+                twitter_handle=task.twitter_handle
+            )
+            if sended:
+                sended_users.append(user_id)
+                twitter_repository.add(twitter_orm)
+                time.sleep(sleep_per_send)
+            else:
+                twitter_orm.sended = False
+                twitter_repository.add(twitter_orm)
 
 
 def change_status(self, kraken_model, new_status):
