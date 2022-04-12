@@ -112,7 +112,7 @@ def twitter_send_message(self):
                 if int(user.user.id) not in stored_users_ids and int(user.user.id) not in users_to_send:
                     users_to_send.append(user.user.id)
             logging.info(f"Usuários localizados: {len(users_to_send)}")
-            if len(users_to_send) <= users_per_round:
+            if len(users_to_send) >= users_per_round:
                 break
 
         logging.info(f"Localizado: {len(users_to_send)} usuários para o envio.")
@@ -126,7 +126,7 @@ def twitter_send_message(self):
             twitter_orm = TwitterSendMessage(
                 user_id=user_id,
                 sended=True,
-                twitter_handle=task.twitter_handle
+                twitter_handle=twitter_handle
             )
             if sended:
                 sended_users.append(user_id)
