@@ -122,7 +122,7 @@ def twitter_send_message(self, task):
         twitter_orm = TwitterSendMessage(
             user_id=user_id,
             sended=True,
-            twitter_handle=task['twitter_handler']
+            twitter_handle=task['twitter_handle']
         )
         if sended:
             sended_users.append(user_id)
