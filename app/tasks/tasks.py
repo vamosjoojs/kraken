@@ -95,7 +95,7 @@ def twitter_send_message(self, task):
         task['oauth_secret']
     )
 
-    stored_users = twitter_repository.get_users_by_twitter_handle(task['twitter_handler'])
+    stored_users = twitter_repository.get_users_by_twitter_handle(task['twitter_handle'])
     stored_users_ids = [x.user_id for x in stored_users]
     sended_users = []
     users_to_send = []
