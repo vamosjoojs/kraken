@@ -87,5 +87,6 @@ class GetTwitterSendMessageTask(Base):
     consumer_key: str
     consumer_secret: str
     tag: str
+    result_type: str
     message: str
     activated: bool
