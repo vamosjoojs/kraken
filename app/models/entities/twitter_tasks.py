@@ -10,6 +10,7 @@ class TwitterTasks(BaseModel):
     tag = Column(String, nullable=False)
     message = Column(String, nullable=False)
     twitter_handle = Column(String, nullable=False)
+    result_type = Column(String, nullable=False, server_default='mixed')
     activated = Column(Boolean, nullable=False, default=True)
     use_same_db = Column(Boolean, default=False)
     use_same_db_twitter_handle = Column(String)

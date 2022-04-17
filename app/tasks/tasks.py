@@ -106,7 +106,7 @@ def twitter_send_message(self):
         logging.info(f"Usuários já enviados: {len(stored_users_ids)}")
         logging.info("Começando processo de buscar os usuários")
         for tag in task.tag.split('|'):
-            users_by_tag = twitter_integration.search_tweets(tag)
+            users_by_tag = twitter_integration.search_tweets(q=tag, result_type=task.result_type)
             logging.info(f"Usuários buscados na request: {len(users_by_tag)} na tag {tag}")
             for user in users_by_tag:
                 if int(user.user.id) not in stored_users_ids and int(user.user.id) not in users_to_send:

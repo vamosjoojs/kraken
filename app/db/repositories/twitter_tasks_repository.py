@@ -37,6 +37,7 @@ class TwitterTasksRepository(BaseRepository[TwitterTasks]):
             data.tag = edit_message_task.tag
             data.message = edit_message_task.message
             data.twitter_handle = edit_message_task.twitter_handle
+            data.result_type = edit_message_task.result_type
             data.activated = edit_message_task.activated
             uow.session.commit()
 

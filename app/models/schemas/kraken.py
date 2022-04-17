@@ -68,6 +68,7 @@ class PostQueue(Base):
 
 class CreateTwitterSendMessageTask(Base):
     twitter_handle: str
+    result_type: str
     oauth_token: str
     oauth_secret: str
     consumer_key: str
