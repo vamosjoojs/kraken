@@ -36,3 +36,4 @@ argparse~=1.4.0
 Brotli~=1.0.9
 tornado~=6.1
 python-telegram-bot==13.12
+watchtower==3.0.0
