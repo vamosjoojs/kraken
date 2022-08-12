@@ -14,7 +14,6 @@ class TwitchServices:
 
     def get_clips(self, next_cursor: str = None, back_cursor: str = None) -> TwitchClipsResponsePagination:
         clips = self.twitch_integration.get_all_clips(after_cursor=next_cursor, back_cursor=back_cursor)
-        self.logging.info("teste")
         list_twitch_clip_response = []
         for clip in clips['data']:
             response_model = TwitchClipsResponse(**clip)
