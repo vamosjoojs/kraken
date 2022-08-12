@@ -27,5 +27,5 @@ RUN chown -R kraken /usr/local/bin
 RUN chown -R kraken /opt/poetry      
 
 USER kraken
-CMD ["celery", "--app=celery_app.app", "worker", "-B", "-E", "--loglevel=INFO", "--concurrency=1"]
+CMD ["celery", "--app=celery_app.app", "worker", "-E", "--loglevel=INFO", "--concurrency=4"]
 

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/kraken.iml" filepath="$PROJECT_DIR$/.idea/kraken.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/kraken-application.iml" filepath="$PROJECT_DIR$/.idea/kraken-application.iml" />
     </modules>
   </component>
 </project>

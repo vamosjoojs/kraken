@@ -28,12 +28,32 @@ class Settings(BaseSettings):
     RABBITMQ_DEFAULT_QUEUE_NAME: Optional[str] = None
 
     INSTA_USERNAME: Optional[str] = None
+    INSTA_USERID: Optional[str] = None
     INSTA_PASSWORD: Optional[str] = None
+    INSTA_ACCESS_TOKEN: Optional[str] = None
 
     TWITCH_APP_ID: Optional[str] = None
     TWITCH_APP_SECRET: Optional[str] = None
 
     CHROME_DRIVER_PATH: Optional[str] = None
+
+    JWT_SECONDS_TO_EXPIRE: Optional[int] = 365 * 24 * 3600
+    JWT_SECRET: Optional[str] = None
+    JWT_ALGORITHM: Optional[str] = "HS256"
+
+    AWS_ACCESS_KEY_ID: Optional[str] = None
+    AWS_SECRET_ACCESS_KEY: Optional[str] = None
+    AWS_BUCKET_NAME: Optional[str] = None
+
+    YOUTUBE_API_KEY: Optional[str] = None
+    YOUTUBE_CHANNEL_ID: Optional[str] = None
+
+    TELEGRAM_TOKEN: Optional[str] = None
+
+    RABBITMQ_URI: Optional[str] = None
+
+    TIKTOK_USER: Optional[str] = None
+    TIKTOK_PASSWORD: Optional[str] = None
 
     @classmethod
     def db_fields(cls):

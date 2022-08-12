@@ -1,1 +1,1 @@
-from .tasks import post_instagram, automatic_post_instagram, twitter_send_message
+from .tasks import post_instagram, twitter_send_message, twitter_follow, instagram_follow, post_twitter
