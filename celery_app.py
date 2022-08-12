@@ -16,9 +16,5 @@ app.conf.beat_schedule = {
     'send-messages': {
         'task': 'app.tasks.tasks.twitter_send_message',
         'schedule': crontab(minute=0, hour='*/2')
-    },
-    'follow-twitter': {
-        'task': 'app.tasks.tasks.twitter_follow',
-        'schedule': crontab(minute=0, hour='*/2')
-    },
+    }
 }
