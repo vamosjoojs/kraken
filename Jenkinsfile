@@ -8,14 +8,9 @@ pipeline {
         '''
       }
     }
-    stage('Prune Docker data') {
-      steps {
-        sh 'docker system prune -a --volumes -f'
-      }
-    }
     stage('Start container') {
       steps {
-        sh 'docker compose up -d --no-color --wait celery'
+        sh 'docker compose up -d --build celery cache'
         sh 'docker compose ps'
       }
     }
