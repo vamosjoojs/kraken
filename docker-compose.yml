@@ -16,6 +16,11 @@ services:
     command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t78
     volumes:
       - cache:/data
+  flower:
+    image: mher/flower
+    command: celery --broker=redis://:eYVX7EwVmmxKPCDmwMtyKVge8oLd2t78@cache:6379 flower --port=5555
+    ports:
+      - 5555:5555
 
 volumes:
   cache:
