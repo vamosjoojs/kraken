@@ -26,6 +26,7 @@ class KrakenServices:
         result_list = []
         for queue_clip in queue_clips.items:
             post_queue = PostQueue(
+                id=queue_clip.kraken_clips.id,
                 created_at=queue_clip.created_at,
                 post_status=PostStatus[queue_clip.post_status],
                 kraken_hand=KrakenHand[queue_clip.kraken_hand],
@@ -122,3 +123,17 @@ class KrakenServices:
         self.kraken_repo.add(kraken_model)
 
         return kraken_model
+
+    def get_clip_data(self, id: int) -> PostInstagramClip:
+        kraken_clip = self.kraken_clips_repo.get_clips_by_id(id)
+        response = PostInstagramClip(
+            id=kraken_clip.id,
+            url=kraken_clip.clip_url,
+            caption=kraken_clip.kraken[0].caption,
+            clip_id=kraken_clip.clip_id,
+            clip_name=kraken_clip.clip_name,
+            schedule=kraken_clip.kraken[0].schedule,
+            kraken_head=kraken_clip.kraken[0].kraken_head
+        )
+
+        return response

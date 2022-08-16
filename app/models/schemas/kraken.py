@@ -90,6 +90,7 @@ class AutomaticPostInstagramClip(Base):
 
 
 class PostQueue(Base):
+    id: int
     created_at: datetime.datetime
     post_status: PostStatus
     kraken_hand: KrakenHand

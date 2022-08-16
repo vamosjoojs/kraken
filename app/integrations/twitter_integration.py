@@ -2,6 +2,11 @@ from typing import List
 
 import tweepy
 
+from app.config.logger import Logger
+
+
+logging = Logger.get_logger("Twitter")
+
 
 class TwitterIntegration:
     def __init__(
@@ -46,7 +51,7 @@ class TwitterIntegration:
             )
             return True
         except Exception as ex:
-            print(ex)
+            logging.info(ex)
             return False
 
     def follow_user(self, user_id: int):

@@ -25,6 +25,21 @@ def get_posts_queue(
     return queue_posts
 
 
+@router.get(
+    "/get_clip_data",
+    name="Kraken: Get clip data",
+    status_code=200,
+    response_model=PostInstagramClip,
+    dependencies=[Depends(JWTBearer(role="user"))],
+)
+def get_clip_data(
+        id: int,
+        kraken_service: KrakenServices = Depends(get_kraken_service),
+):
+    clip_data = kraken_service.get_clip_data(id)
+    return clip_data
+
+
 @router.post(
     "/post_instagram_clip",
     name="Kraken: Queue instagram twitch clip",
