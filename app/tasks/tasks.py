@@ -4,11 +4,15 @@ from app.config.logger import Logger
 from app.db.repositories.instagram_tasks_repository import InstagramTasksRepository
 from app.db.repositories.kraken_clips_repository import KrakenClipsRepository
 from app.db.repositories.parameters_repository import ParametersRepository
+from app.db.repositories.reddit_send_message_repository import RedditSendMessageRepository
+from app.db.repositories.reddit_tasks_repository import RedditTasksRepository
 from app.integrations.Instagram_bot_integration import InstagramBotIntegration
+from app.integrations.reddit_integration import RedditIntegration
 from app.integrations.twitch_integration import TwitchIntegration
 from app.integrations.twitter_integration import TwitterIntegration
 from app.integrations.youtube_integration import YoutubeIntegration
 from app.models.entities import Kraken, TwitterSendMessage, KrakenClips
+from app.models.entities.reddit_send_message import RedditSendMessage
 from app.models.schemas.kraken import PostStatus, KrakenHead
 from app.services.clients.s3 import S3Service
 from app.services.instagram_service import InstagramServices
@@ -19,6 +23,7 @@ from app.db.repositories.twitter_send_message_repository import (
     TwitterSendMessageRepository,
 )
 from app.db.repositories.twitter_tasks_repository import TwitterTasksRepository
+from app.tasks.reddit_task.tools import get_reddit_users_to_send, get_reddit_send_message_params
 
 from celery_app import app
 
@@ -314,7 +319,7 @@ def twitter_send_message(self):
         stored_users = twitter_repository.get_users_by_twitter_handle(twitter_handle)
         stored_users_ids = [x.user_id for x in stored_users]
         sended_users = []
-        logging.info(f"Twitter: {twitter_handle}")
+        logging.info(f"Twitter: {task.twitter_handle}")
         logging.info(f"Usuários já enviados: {len(stored_users_ids)}")
 
         users_to_send = get_users_to_send(
@@ -348,6 +353,62 @@ def twitter_send_message(self):
                 twitter_orm.sended = False
                 twitter_repository.add(twitter_orm)
                 not_sended_count += 1
+
+        logging.info(
+            f"Mensagens enviados: {str(sended_count)}, Mensagens não enviadas: {str(not_sended_count)}"
+        )
+
+
+@app.task(bind=True, max_retries=5, base=DatabaseTask)
+def reddit_send_message(self):
+    reddit_repository = RedditSendMessageRepository(self.get_db)
+    reddit_tasks_repo = RedditTasksRepository(self.get_db)
+    tasks_send_message = reddit_tasks_repo.get_tasks()
+    parameter_repo = ParametersRepository(self.get_db)
+
+    messages_per_hour, sleep_per_send, users_per_round = get_reddit_send_message_params(
+        parameter_repo
+    )
+
+    for task in tasks_send_message:
+        reddit_integration = RedditIntegration(
+            task.client_id, task.client_secret, task.username, task.password
+        )
+
+        stored_users = reddit_repository.get_users_by_reddit_handle(task.reddit_handle)
+        stored_users_ids = [x.user_id for x in stored_users]
+        sended_users = []
+        logging.info(f"Reddit: {task.reddit_handle}")
+        logging.info(f"Usuários já enviados: {len(stored_users_ids)}")
+
+        users_to_send = get_reddit_users_to_send(
+            task.reddit_messages.tag.split("|"),
+            reddit_integration,
+            stored_users_ids,
+            users_per_round
+        )
+        logging.info(f"Localizado: {len(users_to_send)} usuários para o envio.")
+        sended_count = 0
+        not_sended_count = 0
+        for user_id in users_to_send:
+            if len(sended_users) == messages_per_hour:
+                break
+
+            sended = reddit_integration.send_message(
+                user_id, task.reddit_messages.message
+            )
+            reddit_orm = RedditSendMessage(
+                user_id=user_id, sended=True, reddit_handle=task.reddit_handle
+            )
+            if sended:
+                sended_users.append(user_id)
+                time.sleep(sleep_per_send)
+                sended_count += 1
+            else:
+                reddit_orm.sended = False
+                not_sended_count += 1
+
+            reddit_repository.add(reddit_orm)
 
         logging.info(
             f"Mensagens enviados: {str(sended_count)}, Mensagens não enviadas: {str(not_sended_count)}"
