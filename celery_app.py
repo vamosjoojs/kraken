@@ -16,5 +16,9 @@ app.conf.beat_schedule = {
     'send-messages': {
         'task': 'app.tasks.tasks.twitter_send_message',
         'schedule': crontab(minute=0, hour='*/2')
+    },
+    'reddit-send-messages': {
+        'task': 'app.tasks.tasks.reddit_send_message',
+        'schedule': crontab(minute=0, hour='*/2')
     }
 }
