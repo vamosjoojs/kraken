@@ -33,8 +33,8 @@ class RedditIntegration:
         sr = self.reddit.subreddit(display_name=subreddit_name)
         users = []
         for comment in sr.comments(limit=2000):
-            if comment.author not in users:
-                users.append(comment.author)
+            if comment.author.name not in users:
+                users.append(comment.author.name)
         return users
 
     def get_users(self, query: str, subreddit_names: str):
