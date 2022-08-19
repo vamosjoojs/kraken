@@ -34,8 +34,9 @@ class RedditIntegration:
             sr = self.reddit.subreddit(display_name=subreddit_name)
             users = []
             for comment in sr.comments(limit=600):
-                if comment.author.name not in users:
-                    users.append(comment.author.name)
+                if comment.author:
+                    if comment.author.name not in users:
+                        users.append(comment.author.name)
             return users
         except Exception as ex:
             logging.error(ex)
