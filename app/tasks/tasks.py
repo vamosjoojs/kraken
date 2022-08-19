@@ -379,7 +379,7 @@ def reddit_send_message(self):
         stored_users_ids = [x.user_id for x in stored_users]
         sended_users = []
         logging.info(f"Reddit: {task.reddit_handle}")
-        logging.info(f"Usuários já enviados: {len(stored_users_ids)}")
+        logging.info(f"Reddit: Usuários já enviados: {len(stored_users_ids)}")
 
         users_to_send = get_reddit_users_to_send(
             task.reddit_messages.tag.split("|"),
@@ -387,7 +387,7 @@ def reddit_send_message(self):
             stored_users_ids,
             users_per_round
         )
-        logging.info(f"Localizado: {len(users_to_send)} usuários para o envio.")
+        logging.info(f"Reddit: Localizado: {len(users_to_send)} usuários para o envio.")
         sended_count = 0
         not_sended_count = 0
         for user_id in users_to_send:
@@ -411,7 +411,7 @@ def reddit_send_message(self):
             reddit_repository.add(reddit_orm)
 
         logging.info(
-            f"Mensagens enviados: {str(sended_count)}, Mensagens não enviadas: {str(not_sended_count)}"
+            f"Reddit: Mensagens enviados: {str(sended_count)}, Mensagens não enviadas: {str(not_sended_count)}"
         )
 
 

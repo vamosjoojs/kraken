@@ -1,14 +1,8 @@
-import time
-
 from app.db.repositories.parameters_repository import ParametersRepository
 from app.db.repositories.reddit_send_message_repository import RedditSendMessageRepository
 from app.db.repositories.reddit_tasks_repository import RedditTasksRepository
 
-from app.integrations.reddit_integration import RedditIntegration
-from app.models.entities import RedditSendMessage
 from app.tasks import tasks
-
-from app.tasks.reddit_task.tools import get_reddit_users_to_send, get_reddit_send_message_params
 
 
 class RedditServices:

@@ -32,7 +32,7 @@ class RedditIntegration:
     def scrape_subreddit(self, query, subreddit_name):
         sr = self.reddit.subreddit(display_name=subreddit_name)
         users = []
-        for comment in sr.comments(limit=2000):
+        for comment in sr.comments(limit=600):
             try:
                 if comment.author.name not in users:
                     users.append(comment.author.name)
