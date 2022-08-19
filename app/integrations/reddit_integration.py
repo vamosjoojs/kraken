@@ -30,15 +30,15 @@ class RedditIntegration:
         return dt.isoformat()
 
     def scrape_subreddit(self, query, subreddit_name):
-        sr = self.reddit.subreddit(display_name=subreddit_name)
-        users = []
-        for comment in sr.comments(limit=600):
-            try:
+        try:
+            sr = self.reddit.subreddit(display_name=subreddit_name)
+            users = []
+            for comment in sr.comments(limit=600):
                 if comment.author.name not in users:
                     users.append(comment.author.name)
-            except Exception as ex:
-                logging.info(ex)
-        return users
+            return users
+        except Exception as ex:
+            logging.error(ex)
 
     def get_users(self, query: str, subreddit_names: str):
         return self.scrape_subreddit(query, subreddit_names)
