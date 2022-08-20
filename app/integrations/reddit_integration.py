@@ -33,13 +33,11 @@ class RedditIntegration:
         try:
             sr = self.reddit.subreddit(display_name=subreddit_name)
             users = []
-            for comment in sr.comments(limit=600):
+            for comment in sr.comments(limit=40):
                 if comment.author:
                     if comment.author.name not in users:
                         users.append(comment.author.name)
-                if len(users) == max_users:
-                    return users
-                time.sleep(5)
+                time.sleep(1)
                 logging.info(f"Reddit: Total de usuários buscados {len(users)}")
             return users
         except Exception as ex:
