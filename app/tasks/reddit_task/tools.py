@@ -11,14 +11,15 @@ def get_reddit_users_to_send(
     for tag in tags:
         tag, subreddit = tag.split(';')
         users_by_tag = reddit_integration.get_users(subreddit)
-        for user in users_by_tag:
-            if (
-                user not in stored_users_ids
-                and user not in users_to_send
-            ):
-                users_to_send.append(user)
-        if len(users_to_send) >= limit:
-            break
+        if users_by_tag:
+            for user in users_by_tag:
+                if (
+                    user not in stored_users_ids
+                    and user not in users_to_send
+                ):
+                    users_to_send.append(user)
+            if len(users_to_send) >= limit:
+                break
 
     return users_to_send
 

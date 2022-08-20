@@ -37,7 +37,6 @@ class RedditIntegration:
                 if comment.author:
                     if comment.author.name not in users:
                         users.append(comment.author.name)
-                time.sleep(1)
                 logging.info(f"Reddit: Total de usuários buscados {len(users)}")
             return users
         except Exception as ex:
