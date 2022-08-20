@@ -360,6 +360,34 @@ def twitter_send_message(self):
 
 
 @app.task(bind=True, max_retries=5, base=DatabaseTask)
+def reddit_get_users(self):
+    reddit_repository = RedditSendMessageRepository(self.get_db)
+    reddit_tasks_repo = RedditTasksRepository(self.get_db)
+    tasks_send_message = reddit_tasks_repo.get_tasks()
+    for task in tasks_send_message:
+        reddit_integration = RedditIntegration(
+            task.client_id, task.client_secret, task.username, task.password
+        )
+
+        stored_users = reddit_repository.get_users_by_reddit_handle(task.reddit_handle)
+        stored_users_ids = [x.user_id for x in stored_users]
+        logging.info(f"Reddit: {task.reddit_handle}")
+
+        users_to_send = get_reddit_users_to_send(
+            task.reddit_messages.tag.split("|"),
+            reddit_integration,
+            stored_users_ids,
+            50
+        )
+
+        for user in users_to_send:
+            reddit_orm = RedditSendMessage(
+                user_id=user, sended=False, reddit_handle=task.reddit_handle
+            )
+            reddit_repository.add(reddit_orm)
+
+
+@app.task(bind=True, max_retries=5, base=DatabaseTask)
 def reddit_send_message(self):
     reddit_repository = RedditSendMessageRepository(self.get_db)
     reddit_tasks_repo = RedditTasksRepository(self.get_db)
@@ -381,34 +409,24 @@ def reddit_send_message(self):
         logging.info(f"Reddit: {task.reddit_handle}")
         logging.info(f"Reddit: Usuários já enviados: {len(stored_users_ids)}")
 
-        users_to_send = get_reddit_users_to_send(
-            task.reddit_messages.tag.split("|"),
-            reddit_integration,
-            stored_users_ids,
-            users_per_round
-        )
+        users_to_send = reddit_repository.get_users_by_reddit_handle(task.reddit_handle, False)
         logging.info(f"Reddit: Localizado: {len(users_to_send)} usuários para o envio.")
         sended_count = 0
         not_sended_count = 0
-        for user_id in users_to_send:
+        for user in users_to_send:
             if len(sended_users) == messages_per_hour:
                 break
 
             sended = reddit_integration.send_message(
-                user_id, task.reddit_messages.message
-            )
-            reddit_orm = RedditSendMessage(
-                user_id=user_id, sended=True, reddit_handle=task.reddit_handle
+                user.user_id, task.reddit_messages.message
             )
             if sended:
-                sended_users.append(user_id)
+                reddit_repository.update_sended(user.id, True)
+                sended_users.append(user.id)
                 time.sleep(sleep_per_send)
                 sended_count += 1
             else:
-                reddit_orm.sended = False
                 not_sended_count += 1
-
-            reddit_repository.add(reddit_orm)
 
         logging.info(
             f"Reddit: Mensagens enviados: {str(sended_count)}, Mensagens não enviadas: {str(not_sended_count)}"

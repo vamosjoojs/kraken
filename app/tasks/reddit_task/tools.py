@@ -5,19 +5,19 @@ def get_reddit_users_to_send(
     tags,
     reddit_integration: RedditIntegration,
     stored_users_ids,
-    users_per_round,
+    limit: int
 ):
     users_to_send = []
     for tag in tags:
         tag, subreddit = tag.split(';')
-        users_by_tag = reddit_integration.get_users(subreddit, users_per_round)
+        users_by_tag = reddit_integration.get_users(subreddit)
         for user in users_by_tag:
             if (
                 user not in stored_users_ids
                 and user not in users_to_send
             ):
                 users_to_send.append(user)
-        if len(users_to_send) >= users_per_round:
+        if len(users_to_send) >= limit:
             break
 
     return users_to_send

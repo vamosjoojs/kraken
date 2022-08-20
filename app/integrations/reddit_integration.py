@@ -29,7 +29,7 @@ class RedditIntegration:
         dt = datetime.fromtimestamp(unix_time)
         return dt.isoformat()
 
-    def scrape_subreddit(self, subreddit_name, max_users: int):
+    def scrape_subreddit(self, subreddit_name):
         try:
             sr = self.reddit.subreddit(display_name=subreddit_name)
             users = []
@@ -43,8 +43,8 @@ class RedditIntegration:
         except Exception as ex:
             logging.error(ex)
 
-    def get_users(self, subreddit_names: str, max_users: int):
-        return self.scrape_subreddit(subreddit_names, max_users)
+    def get_users(self, subreddit_names: str):
+        return self.scrape_subreddit(subreddit_names)
 
     def try_posting(self, username, subject, message):
         try:
