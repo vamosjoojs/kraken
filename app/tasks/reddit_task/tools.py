@@ -10,7 +10,7 @@ def get_reddit_users_to_send(
     users_to_send = []
     for tag in tags:
         tag, subreddit = tag.split(';')
-        users_by_tag = reddit_integration.get_users(tag, subreddit)
+        users_by_tag = reddit_integration.get_users(subreddit, users_per_round)
         for user in users_by_tag:
             if (
                 user not in stored_users_ids
@@ -26,7 +26,7 @@ def get_reddit_users_to_send(
 def get_reddit_send_message_params(parameter_repo):
     messages_per_hour = 500
     sleep_per_send = 1
-    users_per_round = 800
+    users_per_round = 200
 
     parameters = parameter_repo.get_parameters()
     for parameter in parameters:

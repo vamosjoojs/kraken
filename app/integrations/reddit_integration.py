@@ -29,7 +29,7 @@ class RedditIntegration:
         dt = datetime.fromtimestamp(unix_time)
         return dt.isoformat()
 
-    def scrape_subreddit(self, query, subreddit_name):
+    def scrape_subreddit(self, subreddit_name, max_users: int):
         try:
             sr = self.reddit.subreddit(display_name=subreddit_name)
             users = []
@@ -37,12 +37,16 @@ class RedditIntegration:
                 if comment.author:
                     if comment.author.name not in users:
                         users.append(comment.author.name)
+                if len(users) == max_users:
+                    return users
+                time.sleep(5)
+                logging.info(f"Reddit: Total de usuários buscados {len(users)}")
             return users
         except Exception as ex:
             logging.error(ex)
 
-    def get_users(self, query: str, subreddit_names: str):
-        return self.scrape_subreddit(query, subreddit_names)
+    def get_users(self, subreddit_names: str, max_users: int):
+        return self.scrape_subreddit(subreddit_names, max_users)
 
     def try_posting(self, username, subject, message):
         try:
