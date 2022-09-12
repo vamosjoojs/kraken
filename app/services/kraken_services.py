@@ -45,7 +45,7 @@ class KrakenServices:
     def post_clip_instagram(self, payload: PostInstagramClip):
         if payload.schedule:
             payload.schedule = payload.schedule + timedelta(hours=3)
-        kraken_model = self.create_kraken_and_clips(payload.clip_name,
+        kraken_model, kraken_clips = self.create_kraken_and_clips(payload.clip_name,
                                                     payload.clip_id,
                                                     payload.url,
                                                     payload.caption,
@@ -55,7 +55,7 @@ class KrakenServices:
                                                     payload.schedule)
         payload = dict(payload)
         payload['kraken_id'] = kraken_model.id
-        payload['kraken_head'] = kraken_model.kraken_head
+        payload['kraken_head'] = kraken_clips.kraken_head
 
         if payload['schedule']:
             tasks.post_instagram.apply_async(
@@ -69,7 +69,7 @@ class KrakenServices:
     def post_clip_twitter(self, payload: PostTwitterClip):
         if payload.schedule:
             payload.schedule = payload.schedule + timedelta(hours=3)
-        kraken_model = self.create_kraken_and_clips(payload.clip_name,
+        kraken_model, kraken_clips = self.create_kraken_and_clips(payload.clip_name,
                                                     payload.clip_id,
                                                     payload.url,
                                                     payload.caption,
@@ -80,7 +80,7 @@ class KrakenServices:
 
         payload = dict(payload)
         payload['kraken_id'] = kraken_model.id
-        payload['kraken_head'] = kraken_model.kraken_head
+        payload['kraken_head'] = kraken_clips.kraken_head
 
         if payload['schedule']:
             tasks.post_twitter.apply_async(
@@ -99,14 +99,15 @@ class KrakenServices:
                                 kraken_hand: KrakenHand,
                                 kraken_head: KrakenHead,
                                 id: int = None,
-                                schedule: datetime = None) -> Kraken:
+                                schedule: datetime = None):
         if id:
             kraken_clips = self.kraken_clips_repo.get_clips_by_id(id)
         else:
             kraken_clips_model = KrakenClips(
                 clip_name=clip_name,
                 clip_id=clip_id,
-                clip_url=url
+                clip_url=url,
+                kraken_head=kraken_head
             )
 
             kraken_clips = self.kraken_clips_repo.add(kraken_clips_model)
@@ -121,7 +122,7 @@ class KrakenServices:
 
         self.kraken_repo.add(kraken_model)
 
-        return kraken_model
+        return kraken_model, kraken_clips
 
     def get_clip_data(self, id: int) -> PostInstagramClip:
         kraken_clip = self.kraken_clips_repo.get_clips_by_id(id)
@@ -140,7 +141,7 @@ class KrakenServices:
     def post_clip_tiktok(self, payload):
         if payload.schedule:
             payload.schedule = payload.schedule + timedelta(hours=3)
-        kraken_model = self.create_kraken_and_clips(payload.clip_name,
+        kraken_model, kraken_clips = self.create_kraken_and_clips(payload.clip_name,
                                                     payload.clip_id,
                                                     payload.url,
                                                     payload.caption,
@@ -150,7 +151,7 @@ class KrakenServices:
                                                     payload.schedule)
         payload = dict(payload)
         payload['kraken_id'] = kraken_model.id
-        payload['kraken_head'] = kraken_model.kraken_head
+        payload['kraken_head'] = kraken_clips.kraken_head
 
         if payload['schedule']:
             tasks.post_tiktok.apply_async(
