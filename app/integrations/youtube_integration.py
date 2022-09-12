@@ -53,7 +53,7 @@ class YoutubeIntegration:
         output_path = os.path.join(self.output_path, f'{str(uuid.uuid4())}.mp4')
         thumbnail_path = os.path.join(self.output_path, f'{str(uuid.uuid4())}.jpeg')
         self.clip = VideoFileClip(video_path)
-        self.clip.save_frame(thumbnail_path, t=3.00)
+        self.clip.save_frame(thumbnail_path, t=5.00)
         self.clip = self.clip.subclip(t_start=start_time, t_end=end_time)
         self.clip.write_videofile(filename=output_path, audio_codec='aac')
 
