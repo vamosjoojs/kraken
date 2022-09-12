@@ -24,5 +24,9 @@ app.conf.beat_schedule = {
     'reddit-send-messages': {
         'task': 'app.tasks.tasks.reddit_send_message',
         'schedule': crontab(minute=0, hour='*/2')
+    },
+    'twitch-update-clips': {
+        'task': 'app.tasks.tasks.reddit_send_message',
+        'schedule': crontab(minute=0, hour='*/1')
     }
 }

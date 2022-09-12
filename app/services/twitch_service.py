@@ -2,7 +2,7 @@ from app.config.logger import Logger
 from app.db.repositories.kraken_clips_repository import KrakenClipsRepository
 from app.db.repositories.kraken_repository import KrakenRepository
 from app.models.schemas.common.paginated import Paginated
-from app.models.schemas.kraken import (TwitchClipsResponse, TwitchClipsResponsePagination, KrakenPosted)
+from app.models.schemas.kraken import (TwitchClipsResponse, KrakenPosted)
 from app.integrations.twitch_integration import TwitchIntegration
 
 
@@ -18,6 +18,7 @@ class TwitchServices:
         list_clip_response = []
         for clip in clips.items:
             response_model = TwitchClipsResponse(
+                id=clip.id,
                 url=clip.clip_url,
                 title=clip.clip_name,
                 clip_id=clip.id,

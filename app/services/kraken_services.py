@@ -1,4 +1,3 @@
-from collections import defaultdict
 from datetime import datetime, timedelta
 
 from app.db.repositories.auto_tasks_repository import AutoTasksRepository

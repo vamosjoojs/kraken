@@ -508,6 +508,7 @@ def create_twitch_clips(self):
     if len(all_clips) > 0:
         for new_clip in all_clips:
             kraken_clips_model = KrakenClips(
+                created_at=new_clip['created_at'],
                 clip_name=new_clip['title'],
                 clip_id=new_clip['id'],
                 clip_url=new_clip['thumbnail_url'],

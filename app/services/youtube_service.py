@@ -2,7 +2,6 @@ from app.db.repositories.kraken_clips_repository import KrakenClipsRepository
 from app.db.repositories.kraken_repository import KrakenRepository
 from app.integrations.youtube_integration import YoutubeIntegration
 from app.models.schemas.common.paginated import Paginated
-from app.models.schemas.common.sort import Sort, OrderPage
 from app.models.schemas.kraken import (YoutubeClipsResponsePagination, YoutubeClipsResponse, KrakenPosted)
 from app.tasks import tasks
 
@@ -74,6 +73,7 @@ class YoutubeServices:
         list_clip_response = []
         for clip in clips.items:
             response_model = YoutubeClipsResponse(
+                id=clip.id,
                 url=clip.clip_url,
                 title=clip.clip_name,
                 clip_id=clip.id,

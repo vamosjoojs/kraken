@@ -25,6 +25,7 @@ class TwitchClipsResponsePagination(Base):
 
 
 class YoutubeClipsResponse(Base):
+    id: Optional[int]
     url: Optional[str]
     thumbnail_url: Optional[str]
     title: Optional[str]

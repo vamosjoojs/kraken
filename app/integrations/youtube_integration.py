@@ -51,16 +51,18 @@ class YoutubeIntegration:
 
     def custom_crop(self, video_path, start_time, end_time) -> Tuple[str, str]:
         output_path = os.path.join(self.output_path, f'{str(uuid.uuid4())}.mp4')
+        thumbnail_path = os.path.join(self.output_path, f'{str(uuid.uuid4())}.jpeg')
         self.clip = VideoFileClip(video_path)
-        thumbnail = self.clip.save_frame("thumbnail.jpg", t=1.00)
+        self.clip.save_frame(thumbnail_path, t=3.00)
         self.clip = self.clip.subclip(t_start=start_time, t_end=end_time)
         self.clip.write_videofile(filename=output_path, audio_codec='aac')
 
         video_filename = video_path.split('\\')[-1]
         s3 = S3Service()
         s3_url = s3.upload_file(output_path, video_filename)
+        s3_thumb_url = s3.upload_file(thumbnail_path, f'{str(uuid.uuid4())}.jpeg')
 
         # remover arquivos dps
         # shutil.rmtree(output_path)
 
-        return s3_url, thumbnail
+        return s3_url, s3_thumb_url
