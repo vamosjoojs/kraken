@@ -114,7 +114,6 @@ class KrakenServices:
         kraken_model = Kraken(
             post_status=PostStatus.CREATED.value,
             kraken_hand=kraken_hand,
-            kraken_head=kraken_head,
             kraken_clips_id=kraken_clips.id,
             caption=caption,
             schedule=schedule
