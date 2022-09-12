@@ -77,7 +77,8 @@ class YoutubeServices:
                 url=clip.clip_url,
                 title=clip.clip_name,
                 clip_id=clip.id,
-                video_id=clip.clip_id
+                video_id=clip.clip_id,
+                thumbnail_url=clip.thumbnail
             )
             clip_stored = self.kraken_repo.get_by_clip_id(clip.id)
             kraken_response = []

@@ -457,7 +457,8 @@ def cut_youtube_video(self, payload):
             clip_name=payload["caption"],
             clip_id=payload["youtube_id"],
             clip_url=clip_s3_url,
-            thumbnail=thumbnail
+            thumbnail=thumbnail,
+            kraken_head='YOUTUBE'
         )
 
         kraken_clips_repo.add(youtube_clip)
