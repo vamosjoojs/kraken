@@ -8,6 +8,11 @@ pipeline {
         '''
       }
     }
+    stage('Docker prune') {
+      steps {
+        sh 'docker image prune --all'
+      }
+    }
     stage('Start container') {
       steps {
         sh 'docker compose up -d --build celery cache flower'

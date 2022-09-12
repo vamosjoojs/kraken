@@ -1,5 +1,7 @@
 import shutil
 import uuid
+from typing import Tuple
+
 from app.config.config import config
 
 from googleapiclient.discovery import build
@@ -47,9 +49,10 @@ class YoutubeIntegration:
             ydl.download([video_url])
         return video_path
 
-    def custom_crop(self, video_path, start_time, end_time) -> str:
+    def custom_crop(self, video_path, start_time, end_time) -> Tuple[str, str]:
         output_path = os.path.join(self.output_path, f'{str(uuid.uuid4())}.mp4')
         self.clip = VideoFileClip(video_path)
+        thumbnail = self.clip.save_frame("thumbnail.jpg", t=1.00)
         self.clip = self.clip.subclip(t_start=start_time, t_end=end_time)
         self.clip.write_videofile(filename=output_path, audio_codec='aac')
 
@@ -60,4 +63,4 @@ class YoutubeIntegration:
         # remover arquivos dps
         # shutil.rmtree(output_path)
 
-        return s3_url
+        return s3_url, thumbnail

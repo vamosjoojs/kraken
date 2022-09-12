@@ -1,3 +1,4 @@
+import os
 import time
 
 from app.config.logger import Logger
@@ -16,6 +17,7 @@ from app.models.entities.reddit_send_message import RedditSendMessage
 from app.models.schemas.kraken import PostStatus, KrakenHead
 from app.services.clients.s3 import S3Service
 from app.services.instagram_service import InstagramServices
+from app.services.tiktok_service import TiktokServices
 from app.tasks.base import DatabaseTask
 
 from app.db.repositories.kraken_repository import KrakenRepository
@@ -57,6 +59,7 @@ def post_twitter(self, payload):
         )
 
         is_posted = twitter_integration.post_media(clip_path, payload['caption'])
+        os.remove(clip_path)
 
         if not is_posted:
             logging.info("Não foi possível postar.")
@@ -446,7 +449,7 @@ def cut_youtube_video(self, payload):
 
     try:
         video_path = youtube_integration.download_video(payload["video_url"])
-        clip_s3_url = youtube_integration.custom_crop(
+        clip_s3_url, thumbnail = youtube_integration.custom_crop(
             video_path, payload["start"], payload["end"]
         )
 
@@ -454,8 +457,65 @@ def cut_youtube_video(self, payload):
             clip_name=payload["caption"],
             clip_id=payload["youtube_id"],
             clip_url=clip_s3_url,
+            thumbnail=thumbnail
         )
 
         kraken_clips_repo.add(youtube_clip)
     except Exception as ex:
         logging.info(f"Erro ao criar clip: {ex}")
+
+
+@app.task(bind=True, max_retries=5, base=DatabaseTask)
+def post_tiktok(self, payload):
+    kraken_model = Kraken(id=payload["kraken_id"])
+    try:
+        change_status(self, kraken_model, PostStatus.INITIATED.value)
+        logging.info("Processo de postar no instagram")
+        url = None
+        if payload["kraken_head"] == KrakenHead.YOUTUBE.value:
+            url = payload['url'].replace('//app', '/%2Fapp')
+        if payload["kraken_head"] == KrakenHead.TWITCH.value:
+            url = payload['url'].split("-preview", 1)[0] + ".mp4"
+        if not url:
+            raise Exception("Url não localizada")
+        change_status(self, kraken_model, PostStatus.POSTING.value)
+        tiktok_services = TiktokServices()
+        logging.info("Processo de postagem iniciado")
+        is_posted = tiktok_services.post_clip(payload["caption"], url)
+        if not is_posted:
+            logging.info("Não foi possível postar.")
+            change_status(self, kraken_model, PostStatus.ERROR.value)
+        else:
+            logging.info("Postado!")
+            change_status(self, kraken_model, PostStatus.COMPLETED.value)
+    except Exception as ex:
+        logging.info(f"Erro ao postar: {ex}")
+        change_status(self, kraken_model, PostStatus.ERROR.value)
+        raise Exception(f"{ex}")
+
+
+@app.task(bind=True, max_retries=5, base=DatabaseTask)
+def create_twitch_clips(self):
+    kraken_clips_repo = KrakenClipsRepository(self.get_db)
+    clips = self.twitch_integration.get_all_clips(first=100)
+    all_clips = [x for x in clips['data']]
+    while clips['pagination'].get('cursor'):
+        last_cursor = clips['pagination']['cursor']
+        clips = self.twitch_integration.get_all_clips(after_cursor=last_cursor, first=100)
+        [all_clips.append(x) for x in clips['data']]
+
+    add_clips = []
+    if len(all_clips) > 0:
+        for new_clip in all_clips:
+            kraken_clips_model = KrakenClips(
+                clip_name=new_clip['title'],
+                clip_id=new_clip['id'],
+                clip_url=new_clip['thumbnail_url'],
+                thumbnail=new_clip['thumbnail_url']
+            )
+            add_clips.append(kraken_clips_model)
+
+    for new_clip in add_clips:
+        clip_stored = kraken_clips_repo.get_clips_by_clip_id(new_clip.clip_id)
+        if not clip_stored:
+            kraken_clips_repo.add(new_clip)

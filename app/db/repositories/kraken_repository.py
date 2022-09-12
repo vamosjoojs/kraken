@@ -4,7 +4,7 @@ from sqlalchemy.orm import joinedload
 import sqlalchemy as sa
 from app.db.uow import UnitOfWork
 from app.db.repositories.base_repository import BaseRepository
-from app.models.entities import Kraken
+from app.models.entities import Kraken, KrakenClips
 
 
 class KrakenRepository(BaseRepository[Kraken]):
@@ -26,3 +26,9 @@ class KrakenRepository(BaseRepository[Kraken]):
         qb = sa.select(Kraken).options(joinedload(Kraken.kraken_clips)).order_by(desc(Kraken.created_at))
 
         return self.paginate_query(qb, page, page_size)
+
+    def get_by_clip_id(self, clip_id: str):
+        qb = sa.select(Kraken).where(Kraken.kraken_clips_id == clip_id)
+
+        result = self.uow.session.execute(qb)
+        return result.scalars().unique().all()

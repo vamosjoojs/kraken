@@ -27,7 +27,8 @@ from app.services.youtube_service import YoutubeServices
 def get_twitch_service(session: Session = Depends(get_uow)) -> TwitchServices:
     uow = UnitOfWork(session)
     kraken_clips_repo = KrakenClipsRepository(uow)
-    return TwitchServices(kraken_clips_repo)
+    kraken_repo = KrakenRepository(uow)
+    return TwitchServices(kraken_clips_repo, kraken_repo)
 
 
 def get_instagram_service(
@@ -76,5 +77,6 @@ def get_parameters_service(session: Session = Depends(get_uow)) -> ParametersSer
 def get_youtube_service(session: Session = Depends(get_uow)) -> YoutubeServices:
     uow = UnitOfWork(session)
     kraken_clips_repo = KrakenClipsRepository(uow)
-    return YoutubeServices(kraken_clips_repo)
+    kraken_repo = KrakenRepository(uow)
+    return YoutubeServices(kraken_clips_repo, kraken_repo)
 

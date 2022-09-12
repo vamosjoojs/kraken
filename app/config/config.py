@@ -55,6 +55,9 @@ class Settings(BaseSettings):
     TIKTOK_USER: Optional[str] = None
     TIKTOK_PASSWORD: Optional[str] = None
 
+    TIKTOK_OPEN_ID: Optional[str] = None
+    TIKTOK_ACCESS_TOKEN: Optional[str] = None
+
     @classmethod
     def db_fields(cls):
         user = os.getenv("POSTGRES_USER")

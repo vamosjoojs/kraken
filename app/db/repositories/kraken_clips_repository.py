@@ -1,11 +1,15 @@
+import math
 from typing import List
 
 import sqlalchemy as sa
+from sqlalchemy import desc
 from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import Query
 
 from app.db.uow import UnitOfWork
 from app.db.repositories.base_repository import BaseRepository
-from app.models.entities import KrakenClips
+from app.models.entities import KrakenClips, Kraken
+from app.models.schemas.common.paginated import Paginated
 
 
 class KrakenClipsRepository(BaseRepository[KrakenClips]):
@@ -39,3 +43,14 @@ class KrakenClipsRepository(BaseRepository[KrakenClips]):
 
         result = self.uow.session.execute(qb)
         return result.scalars().unique().all()
+
+    def get_clips_by_kraken_head(self, page: int, page_size: int, kraken_head: str):
+        kraken_clips_sq = (sa.select(KrakenClips).distinct(KrakenClips.clip_name).where(KrakenClips.kraken_head == kraken_head).order_by(KrakenClips.clip_name)).subquery().alias("kraken_clips_sq")
+        qb = sa.select(KrakenClips).select_from(kraken_clips_sq).order_by(desc(kraken_clips_sq.c.created_at))
+
+        result = self.uow.session.execute(qb)
+        ggf = result.scalars().unique().all()
+
+        return self.paginate_query(qb, page, page_size)
+
+

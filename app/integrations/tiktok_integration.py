@@ -1,16 +1,20 @@
-from TikTokApi import TikTokApi
+import requests
+
+from app.config.config import config
 
 
 class TiktokIntegration:
-    pass
-    # def __init__(self) -> None:
-    #     super().__init__()
-    #     self.tiktok = TikTokApi.(config.TWITCH_APP_ID, config.TWITCH_APP_SECRET)
-    #
-    # def get_all_clips(self, after_cursor=None, back_cursor=None, start_at=None, first=8):
-    #     clips = self.twitch.get_clips(broadcaster_id='736977657',
-    #                                   first=first,
-    #                                   after=after_cursor,
-    #                                   before=back_cursor,
-    #                                   started_at=start_at)
-    #     return clips
+    def __init__(self, video_path, caption) -> None:
+        super().__init__()
+        self.video_path = video_path
+        self.caption = caption
+        self.url = 'https://open-api.tiktok.com/share/video/upload/'
+
+    def post_media(self):
+        status_code = requests.post(
+            f'{self.url}?access_token={config.TIKTOK_ACCESS_TOKEN}&open_id={config.TIKTOK_OPEN_ID}',
+            data={
+                'video': self.video_path
+            }
+        )
+        return status_code

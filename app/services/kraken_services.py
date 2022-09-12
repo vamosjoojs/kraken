@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime, timedelta
 
 from app.db.repositories.auto_tasks_repository import AutoTasksRepository
@@ -133,7 +134,31 @@ class KrakenServices:
             clip_id=kraken_clip.clip_id,
             clip_name=kraken_clip.clip_name,
             schedule=kraken_clip.kraken[0].schedule,
-            kraken_head=kraken_clip.kraken[0].kraken_head
+            kraken_head=kraken_clip.kraken_head
         )
 
         return response
+
+    def post_clip_tiktok(self, payload):
+        if payload.schedule:
+            payload.schedule = payload.schedule + timedelta(hours=3)
+        kraken_model = self.create_kraken_and_clips(payload.clip_name,
+                                                    payload.clip_id,
+                                                    payload.url,
+                                                    payload.caption,
+                                                    KrakenHand.TIKTOK.value,
+                                                    payload.kraken_head.value,
+                                                    payload.id,
+                                                    payload.schedule)
+        payload = dict(payload)
+        payload['kraken_id'] = kraken_model.id
+        payload['kraken_head'] = kraken_model.kraken_head
+
+        if payload['schedule']:
+            tasks.post_tiktok.apply_async(
+                args=[dict(payload)], connect_timeout=10, eta=payload['schedule']
+            )
+        else:
+            tasks.post_tiktok.apply_async(
+                args=[dict(payload)], connect_timeout=10
+            )

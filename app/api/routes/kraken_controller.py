@@ -4,7 +4,7 @@ from app.api.dependencies.fetch_params import FetchParams
 from app.api.dependencies.kraken import get_kraken_service
 from app.auth.auth_bearer import JWTBearer
 from app.models.schemas.common.paginated import Paginated
-from app.models.schemas.kraken import PostQueue, PostInstagramClip, PostTwitterClip
+from app.models.schemas.kraken import PostQueue, PostInstagramClip, PostTwitterClip, PostTiktokClip
 from app.services.kraken_services import KrakenServices
 
 router = APIRouter()
@@ -58,3 +58,13 @@ def post_clip_instagram(payload: PostInstagramClip, kraken_services: KrakenServi
 )
 def post_clip_twitter(payload: PostTwitterClip, kraken_services: KrakenServices = Depends(get_kraken_service)):
     kraken_services.post_clip_twitter(payload)
+
+
+@router.post(
+    "/post_tiktok_clip",
+    name="Kraken: Post clip in Tiktok",
+    status_code=201,
+    dependencies=[Depends(JWTBearer(role="user"))],
+)
+def post_clip_tiktok(payload: PostTiktokClip, kraken_services: KrakenServices = Depends(get_kraken_service)):
+    kraken_services.post_clip_tiktok(payload)

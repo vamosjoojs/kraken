@@ -6,7 +6,6 @@ from sqlalchemy.orm import relationship
 class Kraken(BaseModel):
     post_status = Column(String, nullable=False)
     kraken_hand = Column(String, nullable=False)
-    kraken_head = Column(String, nullable=False, server_default='TWITCH')
 
     kraken_clips_id = Column(Integer, ForeignKey("kraken_clips.id"))
     kraken_clips = relationship("KrakenClips", lazy="noload", back_populates="kraken")

@@ -50,6 +50,7 @@ class PostStatus(Enum):
 class KrakenHand(Enum):
     INSTAGRAM = "INSTAGRAM"
     TWITTER = "TWITTER"
+    TIKTOK = "TIKTOK"
 
 
 class KrakenHead(Enum):
@@ -75,6 +76,16 @@ class PostInstagramYoutubeClip(Base):
 class PostTwitterClip(Base):
     id: Optional[int]
     twitter_handle: str
+    url: str
+    caption: str
+    clip_id: str
+    clip_name: str
+    schedule: Optional[datetime.datetime]
+    kraken_head: KrakenHead
+
+
+class PostTiktokClip(Base):
+    id: Optional[int]
     url: str
     caption: str
     clip_id: str
