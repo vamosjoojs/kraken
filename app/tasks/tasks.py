@@ -498,11 +498,12 @@ def post_tiktok(self, payload):
 @app.task(bind=True, max_retries=5, base=DatabaseTask)
 def create_twitch_clips(self):
     kraken_clips_repo = KrakenClipsRepository(self.get_db)
-    clips = self.twitch_integration.get_all_clips(first=100)
+    twitch_integration = TwitchIntegration()
+    clips = twitch_integration.get_all_clips(first=100)
     all_clips = [x for x in clips['data']]
     while clips['pagination'].get('cursor'):
         last_cursor = clips['pagination']['cursor']
-        clips = self.twitch_integration.get_all_clips(after_cursor=last_cursor, first=100)
+        clips = twitch_integration.get_all_clips(after_cursor=last_cursor, first=100)
         [all_clips.append(x) for x in clips['data']]
 
     add_clips = []

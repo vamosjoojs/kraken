@@ -27,6 +27,6 @@ app.conf.beat_schedule = {
     },
     'twitch-update-clips': {
         'task': 'app.tasks.tasks.create_twitch_clips',
-        'schedule': crontab(minute=0, hour='*/1')
+        'schedule': crontab(minute='*/15')
     }
 }
