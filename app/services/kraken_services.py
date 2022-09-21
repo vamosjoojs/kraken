@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from app.db.repositories.auto_tasks_repository import AutoTasksRepository
 from app.db.repositories.kraken_clips_repository import KrakenClipsRepository
 from app.db.repositories.kraken_repository import KrakenRepository
+from app.db.repositories.tiktok_tasks_repository import TiktokTasksRepository
 from app.db.repositories.twitter_tasks_repository import TwitterTasksRepository
 from app.integrations.twitch_integration import TwitchIntegration
 from app.models.entities import KrakenClips, Kraken
@@ -12,13 +13,14 @@ from app import tasks
 
 
 class KrakenServices:
-    def __init__(self, kraken_repo: KrakenRepository, kraken_clips_repo: KrakenClipsRepository, twitter_tasks_repo: TwitterTasksRepository, auto_tasks_repo: AutoTasksRepository):
+    def __init__(self, kraken_repo: KrakenRepository, kraken_clips_repo: KrakenClipsRepository, twitter_tasks_repo: TwitterTasksRepository, auto_tasks_repo: AutoTasksRepository, tiktok_repo: TiktokTasksRepository):
         self.kraken_repo = kraken_repo
         self.twitch_integration = TwitchIntegration()
         self.kraken_clips_repo = kraken_clips_repo
         self.kraken_repo = kraken_repo
         self.twitter_tasks_repo = twitter_tasks_repo
         self.auto_tasks_repo = auto_tasks_repo
+        self.tiktok_repo = tiktok_repo
 
     def get_posts_queue_async(self, page: int, page_size: int) -> Paginated[PostQueue]:
         queue_clips = self.kraken_repo.get_queue_posts(page, page_size)

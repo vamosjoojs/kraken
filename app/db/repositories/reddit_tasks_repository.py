@@ -21,7 +21,7 @@ class RedditTasksRepository(BaseRepository[RedditTasks]):
         return result.scalars().first()
 
     def get_task_by_reddit_handle(self, reddit_handle: str) -> RedditTasks:
-        qb = sa.select(RedditTasks).where(RedditTasks.twitter_handle == reddit_handle)
+        qb = sa.select(RedditTasks).where(RedditTasks.reddit_handle == reddit_handle)
         result = self.uow.session.execute(qb)
         return result.scalars().first()
 

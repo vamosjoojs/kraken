@@ -28,5 +28,9 @@ app.conf.beat_schedule = {
     'twitch-update-clips': {
         'task': 'app.tasks.tasks.create_twitch_clips',
         'schedule': crontab(minute='*/15')
+    },
+    'tiktok-update-access-token': {
+        'task': 'app.tasks.tasks.tiktok_update_access_token',
+        'schedule': crontab(minute='0', hour='*/12')
     }
 }

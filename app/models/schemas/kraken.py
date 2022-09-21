@@ -11,6 +11,7 @@ class KrakenPosted(Base):
 
 
 class TwitchClipsResponse(Base):
+    id: Optional[int]
     url: Optional[str]
     thumbnail_url: Optional[str]
     creator_name: Optional[str]
@@ -88,7 +89,7 @@ class PostTwitterClip(Base):
 class PostTiktokClip(Base):
     id: Optional[int]
     url: str
-    caption: str
+    caption: Optional[str]
     clip_id: str
     clip_name: str
     schedule: Optional[datetime.datetime]

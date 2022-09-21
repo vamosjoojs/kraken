@@ -12,3 +12,4 @@ from .kraken_clips import KrakenClips
 from .reddit_messages import RedditMessages
 from .reddit_tasks import RedditTasks
 from .reddit_send_message import RedditSendMessage
+from .tiktok_tasks import TiktokTasks

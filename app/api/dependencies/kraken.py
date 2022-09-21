@@ -6,6 +6,7 @@ from app.db.repositories.kraken_repository import KrakenRepository
 from app.db.repositories.parameters_repository import ParametersRepository
 from app.db.repositories.reddit_send_message_repository import RedditSendMessageRepository
 from app.db.repositories.reddit_tasks_repository import RedditTasksRepository
+from app.db.repositories.tiktok_tasks_repository import TiktokTasksRepository
 from app.db.repositories.twitter_tasks_repository import TwitterTasksRepository
 from app.db.repositories.twitter_send_message_repository import TwitterSendMessageRepository
 from app.db.uow import UnitOfWork
@@ -19,6 +20,7 @@ from app.services.instagram_service import InstagramServices
 from app.services.kraken_services import KrakenServices
 from app.services.parameters_services import ParametersServices
 from app.services.reddit_service import RedditServices
+from app.services.tiktok_service import TiktokServices
 from app.services.twitch_service import TwitchServices
 from app.services.twitter_service import TwitterServices
 from app.services.youtube_service import YoutubeServices
@@ -48,7 +50,8 @@ def get_kraken_service(session: Session = Depends(get_uow)) -> KrakenServices:
     repository = KrakenRepository(uow)
     kraken_clips_repo = KrakenClipsRepository(uow)
     twitter_tasks = TwitterTasksRepository(uow)
-    return KrakenServices(repository, kraken_clips_repo, twitter_tasks, auto_tasks_repository)
+    tiktok_tasks = TiktokTasksRepository(uow)
+    return KrakenServices(repository, kraken_clips_repo, twitter_tasks, auto_tasks_repository, tiktok_tasks)
 
 
 def get_twitter_service(session: Session = Depends(get_uow)) -> TwitterServices:
@@ -80,3 +83,8 @@ def get_youtube_service(session: Session = Depends(get_uow)) -> YoutubeServices:
     kraken_repo = KrakenRepository(uow)
     return YoutubeServices(kraken_clips_repo, kraken_repo)
 
+
+def get_tiktok_service(session: Session = Depends(get_uow)) -> TiktokServices:
+    uow = UnitOfWork(session)
+    tiktok_repo = TiktokTasksRepository(uow)
+    return TiktokServices(tiktok_repo)

@@ -7,8 +7,10 @@ from app.db.repositories.kraken_clips_repository import KrakenClipsRepository
 from app.db.repositories.parameters_repository import ParametersRepository
 from app.db.repositories.reddit_send_message_repository import RedditSendMessageRepository
 from app.db.repositories.reddit_tasks_repository import RedditTasksRepository
+from app.db.repositories.tiktok_tasks_repository import TiktokTasksRepository
 from app.integrations.Instagram_bot_integration import InstagramBotIntegration
 from app.integrations.reddit_integration import RedditIntegration
+from app.integrations.tiktok_integration import TiktokIntegration
 from app.integrations.twitch_integration import TwitchIntegration
 from app.integrations.twitter_integration import TwitterIntegration
 from app.integrations.youtube_integration import YoutubeIntegration
@@ -472,17 +474,22 @@ def post_tiktok(self, payload):
     try:
         change_status(self, kraken_model, PostStatus.INITIATED.value)
         logging.info("Processo de postar no instagram")
-        url = None
+        clip_path = None
+        logging.info("Processo de postar no tiktok")
         if payload["kraken_head"] == KrakenHead.YOUTUBE.value:
-            url = payload['url'].replace('//app', '/%2Fapp')
-        if payload["kraken_head"] == KrakenHead.TWITCH.value:
-            url = payload['url'].split("-preview", 1)[0] + ".mp4"
-        if not url:
-            raise Exception("Url não localizada")
+            logging.info("Baixando do Youtube")
+            change_status(self, kraken_model, PostStatus.DOWNLOADING_CLIP.value)
+            clip_path = download_clip_youtube(payload["url"])
+        elif payload["kraken_head"] == KrakenHead.TWITCH.value:
+            logging.info("Baixando da Twitch")
+            change_status(self, kraken_model, PostStatus.DOWNLOADING_CLIP.value)
+            clip_path = download_clip_twitch(payload["url"])
+
         change_status(self, kraken_model, PostStatus.POSTING.value)
-        tiktok_services = TiktokServices()
+        tiktok_repo = TiktokTasksRepository(self.get_db)
+        tiktok_services = TiktokServices(tiktok_repo)
         logging.info("Processo de postagem iniciado")
-        is_posted = tiktok_services.post_clip(payload["caption"], url)
+        is_posted = tiktok_services.post_clip(payload["caption"], clip_path)
         if not is_posted:
             logging.info("Não foi possível postar.")
             change_status(self, kraken_model, PostStatus.ERROR.value)
@@ -522,3 +529,19 @@ def create_twitch_clips(self):
         clip_stored = kraken_clips_repo.get_clips_by_clip_id(new_clip.clip_id)
         if not clip_stored:
             kraken_clips_repo.add(new_clip)
+
+
+@app.task(bind=True, max_retries=5, base=DatabaseTask)
+def tiktok_update_access_token(self):
+    tiktok_repo = TiktokTasksRepository(self.get_db)
+    tiktok_integration = TiktokIntegration(tiktok_repo=tiktok_repo)
+    refresh_data = tiktok_integration.refresh_token()
+    if refresh_data:
+        old_data = tiktok_repo.get_task_by_tiktok_handle("vamos_joojar")
+
+        tiktok_repo.update_message_task(
+            id=old_data.id,
+            access_token=refresh_data["access_token"],
+            refresh_token=refresh_data["refresh_token"],
+            expires_in=refresh_data["expires_in"]
+        )
