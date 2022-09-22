@@ -4,7 +4,7 @@ from app.api.dependencies.fetch_params import FetchParams
 from app.api.dependencies.kraken import get_kraken_service
 from app.auth.auth_bearer import JWTBearer
 from app.models.schemas.common.paginated import Paginated
-from app.models.schemas.kraken import PostQueue, PostInstagramClip, PostTwitterClip, PostTiktokClip
+from app.models.schemas.kraken import PostQueue, PostInstagramClip, PostTwitterClip, PostTiktokClip, PostChangeStatus
 from app.services.kraken_services import KrakenServices
 
 router = APIRouter()
@@ -23,6 +23,19 @@ def get_posts_queue(
 ):
     queue_posts = kraken_service.get_posts_queue_async(common.page, common.page_size)
     return queue_posts
+
+
+@router.put(
+    "/update_status",
+    name="Kraken: update status",
+    status_code=200,
+    dependencies=[Depends(JWTBearer(role="user"))],
+)
+def get_posts_queue(
+    post_change_status: PostChangeStatus,
+    kraken_service: KrakenServices = Depends(get_kraken_service),
+):
+    return kraken_service.update_status(post_change_status)
 
 
 @router.get(

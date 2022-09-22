@@ -8,7 +8,8 @@ from app.db.repositories.twitter_tasks_repository import TwitterTasksRepository
 from app.integrations.twitch_integration import TwitchIntegration
 from app.models.entities import KrakenClips, Kraken
 from app.models.schemas.common.paginated import Paginated
-from app.models.schemas.kraken import PostQueue, PostStatus, KrakenHand, PostInstagramClip, KrakenHead, PostTwitterClip
+from app.models.schemas.kraken import PostQueue, PostStatus, KrakenHand, PostInstagramClip, KrakenHead, PostTwitterClip, \
+    PostChangeStatus
 from app import tasks
 
 
@@ -163,3 +164,11 @@ class KrakenServices:
             tasks.post_tiktok.apply_async(
                 args=[dict(payload)], connect_timeout=10
             )
+
+    def update_status(self, post_change_status: PostChangeStatus):
+        kraken_model = Kraken(
+            id=post_change_status.id,
+            post_status=post_change_status.post_status.value,
+            kraken_hand=KrakenHand.TIKTOK
+            )
+        return self.kraken_repo.update_status(kraken_model)

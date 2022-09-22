@@ -111,6 +111,11 @@ class PostQueue(Base):
     schedule: Optional[datetime.datetime]
 
 
+class PostChangeStatus(Base):
+    id: int
+    post_status: PostStatus
+
+
 class CreateTwitterSendMessageTask(Base):
     twitter_handle: str
     result_type: str
