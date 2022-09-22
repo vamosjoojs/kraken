@@ -1,4 +1,4 @@
-from sqlalchemy import desc
+from sqlalchemy import asc
 from sqlalchemy.orm import joinedload
 
 import sqlalchemy as sa
@@ -23,7 +23,7 @@ class KrakenRepository(BaseRepository[Kraken]):
         return kraken_model.id
 
     def get_queue_posts(self, page: int, page_size: int):
-        qb = sa.select(Kraken).options(joinedload(Kraken.kraken_clips)).order_by(desc(Kraken.schedule))
+        qb = sa.select(Kraken).options(joinedload(Kraken.kraken_clips)).order_by(asc(Kraken.schedule))
 
         return self.paginate_query(qb, page, page_size)
 
