@@ -13,6 +13,7 @@ class KrakenRepository(BaseRepository[Kraken]):
 
     def update_status(self, kraken_model: Kraken) -> int:
         qb = sa.select(Kraken).where(Kraken.id == kraken_model.id)
+        qb = qb.where(Kraken.schedule is not None)
         result = self.uow.session.execute(qb)
         data = result.scalars().first()
 
