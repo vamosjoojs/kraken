@@ -13,7 +13,6 @@ class KrakenRepository(BaseRepository[Kraken]):
 
     def update_status(self, kraken_model: Kraken) -> int:
         qb = sa.select(Kraken).where(Kraken.id == kraken_model.id)
-        qb = qb.where(Kraken.schedule is not None)
         result = self.uow.session.execute(qb)
         data = result.scalars().first()
 
@@ -25,6 +24,7 @@ class KrakenRepository(BaseRepository[Kraken]):
 
     def get_queue_posts(self, page: int, page_size: int):
         qb = sa.select(Kraken).options(joinedload(Kraken.kraken_clips)).order_by(desc(Kraken.schedule))
+        qb = qb.where(Kraken.schedule is not None)
 
         return self.paginate_query(qb, page, page_size)
 
