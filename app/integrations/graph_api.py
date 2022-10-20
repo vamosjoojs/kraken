@@ -2,14 +2,16 @@ import requests
 import json
 
 from app.config.config import config
+from app.config.logger import Logger
+
+logging = Logger.get_logger("graph api")
 
 
 class InstagramGraphIntegration:
-    def __init__(self, video_path, caption, logging) -> None:
+    def __init__(self, video_path, caption) -> None:
         super().__init__()
         self.video_path = video_path
         self.caption = caption
-        self.logger = logging
 
     def create_container_instagram_graph_api(self) -> str:
         post_url = f"https://graph.facebook.com/v14.0/{config.INSTA_USERID}/media"
@@ -20,8 +22,8 @@ class InstagramGraphIntegration:
             "access_token": config.INSTA_ACCESS_TOKEN,
         }
         r = requests.post(post_url, data=payload)
-        self.logger.info(r.status_code)
-        self.logger.info(r.text)
+        logging.info(r.status_code)
+        logging.info(r.text)
         return json.loads(r.text)['id']
 
     def verify_container_id(self, container_id: str):
