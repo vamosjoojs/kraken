@@ -10,7 +10,7 @@ class InstagramServices:
     @staticmethod
     def post_clip(caption, video_path) -> bool:
         logging.info(f'video path {video_path}')
-        instagram_integration = InstagramGraphIntegration(video_path=video_path, caption=caption)
+        instagram_integration = InstagramGraphIntegration(video_path=video_path, caption=caption, logging=logging)
         logging.info('Começando integração')
         container_id = instagram_integration.create_container_instagram_graph_api()
         logging.info(f'Container ID: {container_id}')
