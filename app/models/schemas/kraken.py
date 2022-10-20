@@ -63,7 +63,7 @@ class KrakenHead(Enum):
 class PostInstagramClip(Base):
     id: Optional[int]
     url: str
-    caption: str
+    caption: Optional[str]
     clip_id: str
     clip_name: str
     schedule: Optional[datetime.datetime]

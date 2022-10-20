@@ -5,11 +5,11 @@ from app.config.config import config
 
 
 class InstagramGraphIntegration:
-    def __init__(self, video_path, caption, logger) -> None:
+    def __init__(self, video_path, caption, logging) -> None:
         super().__init__()
         self.video_path = video_path
         self.caption = caption
-        self.logger = logger
+        self.logger = logging
 
     def create_container_instagram_graph_api(self) -> str:
         post_url = f"https://graph.facebook.com/v14.0/{config.INSTA_USERID}/media"

@@ -23,7 +23,7 @@ class KrakenRepository(BaseRepository[Kraken]):
         return kraken_model.id
 
     def get_queue_posts(self, page: int, page_size: int):
-        qb = sa.select(Kraken).options(joinedload(Kraken.kraken_clips)).order_by(desc(Kraken.schedule))
+        qb = sa.select(Kraken).options(joinedload(Kraken.kraken_clips)).order_by(desc(Kraken.schedule), desc(Kraken.id))
         qb = qb.where(Kraken.schedule != None)
 
         return self.paginate_query(qb, page, page_size)
