@@ -13,10 +13,10 @@ app.conf.result_backend_transport_options = {'result_chord_ordered': True}
 app.conf.worker_prefetch_multiplier = 1
 
 app.conf.beat_schedule = {
-    'send-messages': {
-        'task': 'app.tasks.tasks.twitter_send_message',
-        'schedule': crontab(minute=0, hour='*/2')
-    },
+    # 'send-messages': {
+    #     'task': 'app.tasks.tasks.twitter_send_message',
+    #     'schedule': crontab(minute=0, hour='*/2')
+    # },
     'twitch-update-clips': {
         'task': 'app.tasks.tasks.create_twitch_clips',
         'schedule': crontab(minute='*/15')
