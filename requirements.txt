@@ -29,7 +29,7 @@ Pillow>=8.1.1
 requests-toolbelt==0.9.1
 google-api-python-client==2.46.0
 TikTokApi~=5.1.1
-yt-dlp==2022.4.8
+yt-dlp==2023.02.17
 moviepy==1.0.3
 PyDrive==1.3.1
 argparse~=1.4.0
