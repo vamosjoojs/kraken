@@ -22,6 +22,28 @@ services:
     ports:
       - 5555:5555
 
+  kraken-chrome:
+    image: selenium/node-chrome:4.7.2-20221219
+    shm_size: 2gb
+    ports:
+      - 5900:5900
+    depends_on:
+      - kraken-selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=kraken-selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+      - SE_NODE_MAX_SESSIONS=5
+
+  kraken-selenium-hub:
+    image: selenium/hub:4.7.2-20221219
+    container_name: kraken-selenium-hub
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+
 volumes:
   cache:
     driver: local

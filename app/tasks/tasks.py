@@ -1,6 +1,7 @@
 import os
 import time
 
+from app.config.config import config
 from app.config.logger import Logger
 from app.db.repositories.instagram_tasks_repository import InstagramTasksRepository
 from app.db.repositories.kraken_clips_repository import KrakenClipsRepository
@@ -13,6 +14,7 @@ from app.integrations.reddit_integration import RedditIntegration
 from app.integrations.tiktok_integration import TiktokIntegration
 from app.integrations.twitch_integration import TwitchIntegration
 from app.integrations.twitter_integration import TwitterIntegration
+from app.integrations.twitter_selenium_integration import TwitterSeleniumIntegration
 from app.integrations.youtube_integration import YoutubeIntegration
 from app.models.entities import Kraken, TwitterSendMessage, KrakenClips
 from app.models.entities.reddit_send_message import RedditSendMessage
@@ -53,14 +55,13 @@ def post_twitter(self, payload):
         twitter_tasks_repo = TwitterTasksRepository(self.get_db)
         twitter_info = twitter_tasks_repo.get_task_by_twitter_handle(payload['twitter_handle'])
 
-        twitter_integration = TwitterIntegration(
-            consumer_key=twitter_info.consumer_key,
-            consumer_secret=twitter_info.consumer_secret,
-            oauth_secret=twitter_info.oauth_secret,
-            oauth_token=twitter_info.oauth_token
+        twitter_selenium_integration = TwitterSeleniumIntegration(
+            username=twitter_info.twitter_handle,
+            password=config.TWITTER_PASSWORD
         )
 
-        is_posted = twitter_integration.post_media(clip_path, payload['caption'])
+        is_posted = twitter_selenium_integration.post_tweet(video_path=clip_path, tweet_text=payload['caption'])
+
         os.remove(clip_path)
 
         if not is_posted:

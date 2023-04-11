@@ -58,6 +58,9 @@ class Settings(BaseSettings):
     TIKTOK_OPEN_ID: Optional[str] = None
     TIKTOK_ACCESS_TOKEN: Optional[str] = None
 
+    TWITTER_PASSWORD: str = None
+
+    SELENIUM_HUB_URL: str = 'http://host.docker.internal:4444/wd/hub'
     @classmethod
     def db_fields(cls):
         user = os.getenv("POSTGRES_USER")
