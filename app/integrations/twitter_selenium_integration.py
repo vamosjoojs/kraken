@@ -31,25 +31,33 @@ class TwitterSeleniumIntegration:
                 command_executor=config.SELENIUM_HUB_URL,
                 desired_capabilities=chrome_options.to_capabilities(),
             )
-            wait = WebDriverWait(driver, 10)
+            wait = WebDriverWait(driver, 15)
 
             driver.get("https://twitter.com/login")
+
+            time.sleep(10)
 
             username_field = wait.until(EC.presence_of_element_located((By.NAME, "text")))
             username_field.send_keys(self.username)
             username_field.send_keys(Keys.RETURN)
 
+            time.sleep(10)
+
             password_field = wait.until(EC.presence_of_element_located((By.NAME, "password")))
             password_field.send_keys(self.password)
             password_field.send_keys(Keys.RETURN)
 
-            time.sleep(5)
+            time.sleep(20)
 
             driver.get("https://twitter.com/compose/tweet")
+
+            time.sleep(10)
 
             text_field = wait.until(
                 EC.presence_of_element_located((By.XPATH, '//div[@class="notranslate public-DraftEditor-content"]')))
             text_field.send_keys(tweet_text)
+
+            time.sleep(20)
 
             media_button = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@type="file"]')))
             media_button.send_keys(video_path)

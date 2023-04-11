@@ -15,7 +15,7 @@ pipeline {
     }
     stage('Start container') {
       steps {
-        sh 'docker compose up -d --build celery cache flower'
+        sh 'docker compose up -d --build'
         sh 'docker compose ps'
       }
     }
