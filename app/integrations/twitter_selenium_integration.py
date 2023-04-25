@@ -27,13 +27,19 @@ class TwitterSeleniumIntegration:
             chrome_options.add_argument('--kiosk-printing')
             chrome_options.add_argument('--disable-dev-shm-usage')
 
+            logging.info("Creating driver...")
+
             driver = webdriver.Remote(
                 command_executor=config.SELENIUM_HUB_URL,
                 desired_capabilities=chrome_options.to_capabilities(),
             )
             wait = WebDriverWait(driver, 15)
 
+            logging.info("Driver started")
+
             driver.get("https://twitter.com/login")
+
+            logging.info("Twitter page loaded successfully")
 
             time.sleep(10)
 
@@ -41,15 +47,21 @@ class TwitterSeleniumIntegration:
             username_field.send_keys(self.username)
             username_field.send_keys(Keys.RETURN)
 
+            logging.info("username field completed")
+
             time.sleep(10)
 
             password_field = wait.until(EC.presence_of_element_located((By.NAME, "password")))
             password_field.send_keys(self.password)
             password_field.send_keys(Keys.RETURN)
 
+            logging.info("password field completed")
+
             time.sleep(20)
 
             driver.get("https://twitter.com/compose/tweet")
+
+            logging.info("compose page opened")
 
             time.sleep(10)
 
@@ -57,15 +69,21 @@ class TwitterSeleniumIntegration:
                 EC.presence_of_element_located((By.XPATH, '//div[@class="notranslate public-DraftEditor-content"]')))
             text_field.send_keys(tweet_text)
 
+            logging.info("Description field completed")
+
             time.sleep(20)
 
             media_button = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@type="file"]')))
             media_button.send_keys(video_path)
 
+            logging.info("Video field completed")
+
             time.sleep(50)
 
             tweet_button = wait.until(EC.element_to_be_clickable((By.XPATH, '//div[@data-testid="tweetButton"]')))
             tweet_button.click()
+
+            logging.info("Posted")
 
             time.sleep(10)
 
