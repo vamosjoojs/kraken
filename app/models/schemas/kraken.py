@@ -110,6 +110,13 @@ class PostQueue(Base):
     name: Optional[str]
     schedule: Optional[datetime.datetime]
 
+class PostsDetail(Base):
+    kraken_hand: KrakenHand
+    post_count: int
+
+class GetPostByMonth(Base):
+    date: Optional[datetime.date]
+    post_detail: List[PostsDetail]
 
 class PostChangeStatus(Base):
     id: int

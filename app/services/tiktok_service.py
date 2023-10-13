@@ -16,12 +16,12 @@ class TiktokServices:
     def post_clip(self, caption, video_path) -> bool:
         logging.info(f'video path {video_path}')
         tiktok_integration = TiktokIntegration(video_path=video_path, caption=caption, tiktok_repo=self.tiktok_repo)
-        logging.info('Começando integração com o tiktik')
+        logging.info('Começando integração com o tiktok')
         status_code = tiktok_integration.post_media()
         logging.info(status_code)
-        if status_code != 200:
-            return True
-        return False
+        if status_code != 201:
+            return False
+        return True
 
     def refresh_token(self):
         tiktok_integration = TiktokIntegration(tiktok_repo=self.tiktok_repo)

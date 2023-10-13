@@ -1,0 +1,22 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool: Servidor
+
+steps:
+- task: CopyFiles@2
+  displayName: Copy dummy file to deploy folder
+  inputs:
+    SourceFolder: '$(System.DefaultWorkingDirectory)/azure-pipeline.yml'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/deploy'
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish artifact
+  inputs:
+    ArtifactName: 'artifact'
+

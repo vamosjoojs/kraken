@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 from app.db.repositories.auto_tasks_repository import AutoTasksRepository
 from app.db.repositories.kraken_clips_repository import KrakenClipsRepository
@@ -9,8 +9,10 @@ from app.integrations.twitch_integration import TwitchIntegration
 from app.models.entities import KrakenClips, Kraken
 from app.models.schemas.common.paginated import Paginated
 from app.models.schemas.kraken import PostQueue, PostStatus, KrakenHand, PostInstagramClip, KrakenHead, PostTwitterClip, \
-    PostChangeStatus
+    PostChangeStatus, GetPostByMonth, PostsDetail
 from app import tasks
+import calendar
+from collections import defaultdict
 
 
 class KrakenServices:
@@ -44,6 +46,26 @@ class KrakenServices:
             current_page=queue_clips.current_page,
             items=result_list
         )
+
+    def get_posts_by_date(self, date: date, post_status: PostStatus) -> GetPostByMonth:
+        range_date = calendar.monthrange(date.year, date.month)
+        queue_clips = self.kraken_repo.get_queue_post_by_date(initial_date=date.replace(day=range_date[0]+1), finish_date=date.replace(day=range_date[1]), post_status=post_status.value)
+
+        contagem_kraken_hand = defaultdict(int)
+
+        for objeto in queue_clips:
+            kraken_hand = objeto.kraken_hand
+            contagem_kraken_hand[kraken_hand] += 1
+
+        post_detail = []
+        for kraken_hand, contagem in contagem_kraken_hand.items():
+            post_detail.append(PostsDetail(
+                kraken_hand=kraken_hand,
+                post_count=contagem
+            ))
+
+
+        return GetPostByMonth(post_detail=post_detail, date=date)
 
     def post_clip_instagram(self, payload: PostInstagramClip):
         if payload.schedule:
