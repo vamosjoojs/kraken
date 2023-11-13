@@ -14,7 +14,8 @@ router = APIRouter()
     dependencies=[Depends(JWTBearer(role="admin"))],
 )
 def create(
-    token: AccessTokenInCreate, auth_service: AuthService = Depends(get_auth_service)
+    token: AccessTokenInCreate, 
+    auth_service: AuthService = Depends(get_auth_service)
 ) -> AccessTokenResponse:
     response = auth_service.create(token)
 
@@ -27,7 +28,8 @@ def create(
     name="Auth: Login with token",
 )
 def create(
-    token: str, auth_service: AuthService = Depends(get_auth_service)
+    token: str,
+    auth_service: AuthService = Depends(get_auth_service)
 ) -> bool:
     response = auth_service.login(token)
     return response
