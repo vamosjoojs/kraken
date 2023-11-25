@@ -31,11 +31,11 @@ class KrakenServices:
         result_list = []
         for queue_clip in queue_clips.items:
             post_queue = PostQueue(
-                id=queue_clip.kraken_clips.id,
+                id=queue_clip.kraken_clips_id,
                 created_at=queue_clip.created_at,
                 post_status=PostStatus[queue_clip.post_status],
                 kraken_hand=KrakenHand[queue_clip.kraken_hand],
-                name=queue_clip.kraken_clips.clip_name,
+                name=queue_clip.caption,
                 schedule=queue_clip.schedule
             )
             result_list.append(post_queue)
